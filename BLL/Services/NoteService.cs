@@ -2,6 +2,7 @@
 using BLL.DTOs;
 using DAL;
 using DAL.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,11 +14,13 @@ namespace BLL.Services
     public class NoteService
     {
         private readonly DataAccessFactory dataAccessFactory;
+        private readonly CategoryService categoryService;
         private readonly IMapper mapper;
 
         public NoteService(DataAccessFactory dataAccessFactory, IMapper mapper)
         {
             this.dataAccessFactory = dataAccessFactory;
+            categoryService = new CategoryService(dataAccessFactory, mapper);
             this.mapper = mapper;
         }
 
@@ -65,6 +68,16 @@ namespace BLL.Services
             using var noteRepository = dataAccessFactory.CreateNoteData();
 
             return await noteRepository.DeleteAsync(id);
+        }
+
+        public async Task<CreateNoteDTO> CreateNoteViewAsync()
+        {
+            var data = new CreateNoteDTO();
+            /*var noteEmpty = new NoteDTO { CategoryId = 1, DueDate = DateTime.MaxValue, NoteTitle = "", NoteDescription = "", Priority = 1000, Status = "ongoing", UserId = 1 };
+            */
+            var Categories = await categoryService.GetAllCategorysAsync();
+            data.Categories = Categories;
+            return data;
         }
     }
 }

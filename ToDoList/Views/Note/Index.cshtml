@@ -1,0 +1,60 @@
+﻿@model IEnumerable<BLL.DTOs.NoteDTO>
+
+<div class="container p-4">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 clss="text-primary">Notes</h2>
+        </div>
+        <div class="col-6 text-end">
+            <a asp-controller="Note" asp-action="Create" class="btn btn-outline-success">
+                <i class="bi bi-plus-circle-dotted"></i> &nbsp; Add Note
+            </a>
+        </div>
+    </div>
+</div>
+<br />
+
+
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    @foreach (var item in Model)
+    {
+        <div class="col">
+            <div class="card border-dark mb-3" style="max-width: 20rem;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>@Html.DisplayFor(modelItem => item.NoteTitle)</span>
+                    @* <div>
+                        <a class="btn btn-primary" asp-controller="Category" asp-action="buy" asp-route-id="@item.Category.Id" style="background-color: 
+                           lightgray; border-color: lightgray;"
+                           onmouseover="this.style.backgroundColor='darkgrey'; this.style.borderColor='darkgrey';"
+                           onmouseout="this.style.backgroundColor='lightgray'; this.style.borderColor='lightgray';">Buy Now</a>
+                    </div> *@
+                </div>
+                <div class="card-body">
+                    
+                    <h4 class="card-text">@Html.DisplayFor(modelItem => item.NoteDescription)</h4>
+                    <div class="btn-group" role="group">
+                        @if (item.DueDate < DateTime.Now)
+                        {
+                            <a class="btn-group text-danger" >Expired</a>
+                        }
+                        
+                        <a class="btn btn-group" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        @{
+                            if (item.Status.Equals("ongoing"))
+                            {
+                                <a class="btn btn-group" asp-action="MarkDone" asp-route-id="@item.Id">Mark As Done</a>
+                            }
+                            else{
+                                <a class="btn-group">Done</a>
+                            }
+                        }
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    }
+</div>
+

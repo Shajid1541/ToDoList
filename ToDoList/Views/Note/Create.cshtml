@@ -1,0 +1,42 @@
+﻿@model BLL.DTOs.CreateNoteDTO
+
+
+<h2>Create New Task</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="NoteDTO.NoteTitle"></label>
+        <input asp-for="NoteDTO.NoteTitle" class="form-control" />
+        <span asp-validation-for="NoteDTO.NoteTitle" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="NoteDTO.NoteDescription"></label>
+        <textarea asp-for="NoteDTO.NoteDescription" class="form-control"></textarea>
+        <span asp-validation-for="NoteDTO.NoteDescription" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="NoteDTO.DueDate"></label>
+        <input asp-for="NoteDTO.DueDate" type="date" class="form-control" />
+        <span asp-validation-for="NoteDTO.DueDate" class="text-danger"></span>
+    </div>
+
+    <!-- Set Priority and Status -->
+    <input type="hidden" asp-for="NoteDTO.Priority" value="0" />
+    <input type="hidden" asp-for="NoteDTO.Status" value="Ongoing" />
+
+    <div class="form-group">
+        <label asp-for="NoteDTO.CategoryId"></label>
+        <select asp-for="NoteDTO.CategoryId" class="form-control">
+            <option value="">Select Category</option>
+            @foreach (var category in Model.Categories)
+            {
+                <option value="@category.Id">@category.Name</option>
+            }
+        </select>
+        <span asp-validation-for="NoteDTO.CategoryId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>
+

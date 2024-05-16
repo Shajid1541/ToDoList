@@ -13,6 +13,10 @@ namespace ToDoList
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+            // Register AutoMapper
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+
             //add database connetction
             builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(
                     builder.Configuration.GetConnectionString("DefaultConnection")

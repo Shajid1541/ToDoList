@@ -12,18 +12,26 @@ namespace DAL
 {
     public class DataAccessFactory
     {
-        public static IRepository<User, int, User> UserData(AppDbContext db)
+        private readonly AppDbContext _dbContext;
+
+        public DataAccessFactory(AppDbContext dbContext)
         {
-            return new UserRepository(db);
-        }
-        public static IRepository<Category, int, Category> CategoryData(AppDbContext db)
-        {
-            return new CategoryRepository(db);
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
-        public static IRepository<Note, int, Note > NoteData(AppDbContext db)
+        public IRepository<User, int, User> CreateUserData()
         {
-            return new NoteRepository(db);
+            return new UserRepository(_dbContext);
+        }
+
+        public IRepository<Category, int, Category> CreateCategoryData()
+        {
+            return new CategoryRepository(_dbContext);
+        }
+
+        public IRepository<Note, int, Note> CreateNoteData()
+        {
+            return new NoteRepository(_dbContext);
         }
     }
 }

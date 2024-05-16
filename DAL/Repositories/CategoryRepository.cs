@@ -38,6 +38,11 @@ namespace DAL.Repositories
             return true;
         }
 
+        public void Dispose()
+        {
+            db.Dispose();
+        }
+
         public async Task<List<Category>> ReadAllAsync()
         {
             return await _db.Categories.ToListAsync();

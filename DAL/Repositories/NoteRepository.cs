@@ -18,6 +18,11 @@ namespace DAL.Repositories
         {
             _db = db;
         }
+
+        public void Dispose()
+        {
+            db.Dispose();
+        }
         public async Task<Note> CreateAsync(Note entity)
         {
             await _db.Notes.AddAsync(entity);

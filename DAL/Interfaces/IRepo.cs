@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DAL.Interfaces
 {
-    public interface IRepository<TEntity, TKey, TResult>
+    public interface IRepository<TEntity, TKey, TResult> : IDisposable
     {
         Task<TResult> CreateAsync(TEntity entity);
 

@@ -27,16 +27,19 @@
 
     <div class="form-group">
         <label asp-for="NoteDTO.CategoryId"></label>
-        <select asp-for="NoteDTO.CategoryId" class="form-control">
+        <select asp-for="NoteDTO.CategoryId" class="form-select">
             <option value="">Select Category</option>
             @foreach (var category in Model.Categories)
             {
-                <option value="@category.Id">@category.Name</option>
+                <option class="text" value="@category.Id">@category.Name</option>
             }
         </select>
         <span asp-validation-for="NoteDTO.CategoryId" class="text-danger"></span>
     </div>
 
-    <button type="submit" class="btn btn-primary">Create</button>
+    <button type="submit" class="btn btn-success">Create</button>
 </form>
+<div>
+    <a class="btn btn-warning" asp-action="Index">Back to List</a>
+</div>
 

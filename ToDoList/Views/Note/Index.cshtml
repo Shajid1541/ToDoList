@@ -3,7 +3,7 @@
 <div class="container p-4">
     <div class="row pt-4">
         <div class="col-6">
-            <h2 clss="text-primary">Notes</h2>
+            <h2 clss="text-primary">Your Notes</h2>
         </div>
         <div class="col-6 text-end">
             <a asp-controller="Note" asp-action="Create" class="btn btn-outline-success">
@@ -23,12 +23,9 @@
             <div class="card border-dark mb-3" style="max-width: 20rem;">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <span>@Html.DisplayFor(modelItem => item.NoteTitle)</span>
-                    @* <div>
-                        <a class="btn btn-primary" asp-controller="Category" asp-action="buy" asp-route-id="@item.Category.Id" style="background-color: 
-                           lightgray; border-color: lightgray;"
-                           onmouseover="this.style.backgroundColor='darkgrey'; this.style.borderColor='darkgrey';"
-                           onmouseout="this.style.backgroundColor='lightgray'; this.style.borderColor='lightgray';">Buy Now</a>
-                    </div> *@
+                    <div>
+                        <button class="btn btn-primary" disabled>@item.DueDate.ToShortDateString()</button>
+                    </div>
                 </div>
                 <div class="card-body">
                     
@@ -36,17 +33,22 @@
                     <div class="btn-group" role="group">
                         @if (item.DueDate < DateTime.Now)
                         {
-                            <a class="btn-group text-danger" >Expired</a>
+                            <button class="btn btn-group btn-warning" disabled>Expired</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-group btn-success" disabled>Valid</button>
                         }
                         
-                        <a class="btn btn-group" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+
+                        <a class="btn btn-group btn-secondary" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
                         @{
-                            if (item.Status.Equals("ongoing"))
+                            if (item.Status.Equals("Ongoing"))
                             {
-                                <a class="btn btn-group" asp-action="MarkDone" asp-route-id="@item.Id">Mark As Done</a>
+                                <a class="btn btn-group btn-primary" asp-action="MarkDone" asp-route-id="@item.Id">Done</a>
                             }
                             else{
-                                <a class="btn-group">Done</a>
+                                <button class="btn btn-group btn-success" disabled>Finished</button>
                             }
                         }
                         

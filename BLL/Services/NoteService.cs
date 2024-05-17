@@ -32,12 +32,14 @@ namespace BLL.Services
             return mapper.Map<NoteDTO>(note);
         }
 
-        public async Task<NoteDTO> GetNoteByIdAsync(int id)
+        public async Task<CreateNoteDTO> GetNoteByIdAsync(int id)
         {
             using var noteRepository = dataAccessFactory.CreateNoteData();
 
-            var note = await noteRepository.ReadAsync(id);
-            return mapper.Map<NoteDTO>(note);
+            var note = new CreateNoteDTO();
+            note.NoteDTO = mapper.Map<NoteDTO>(await noteRepository.ReadAsync(id));
+            note.Categories = await categoryService.GetAllCategorysAsync();
+            return note;
         }
 
         public async Task<List<NoteDTO>> GetAllNotesAsync()
@@ -78,6 +80,14 @@ namespace BLL.Services
             var Categories = await categoryService.GetAllCategorysAsync();
             data.Categories = Categories;
             return data;
+        }
+
+        public async Task MarkDoneAsync(int id)
+        {
+            using var noteRepository = dataAccessFactory.CreateNoteData();
+            var note = await noteRepository.ReadAsync(id);
+            note.Status = "Done";
+            await noteRepository.UpdateAsync(note);
         }
     }
 }

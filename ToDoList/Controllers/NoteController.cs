@@ -49,5 +49,27 @@ namespace ToDoList.Controllers
             
         }
         #endregion
+       
+        public async Task<IActionResult> MarkDone(int id)
+        {
+            await noteService.MarkDoneAsync(id);
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var data = await noteService.GetNoteByIdAsync(id);
+            return View(data);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(NoteDTO noteDTO)
+        {
+            await noteService.UpdateNoteAsync(noteDTO);
+            return RedirectToAction("Index");
+        }
+
     }
 }

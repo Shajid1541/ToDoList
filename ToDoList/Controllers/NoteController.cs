@@ -71,5 +71,17 @@ namespace ToDoList.Controllers
             return RedirectToAction("Index");
         }
 
+        public async Task<IActionResult> Delete(int id)
+        {
+            await noteService.DeleteNoteAsync(id);
+            return RedirectToAction("Index");
+        }
+
+        /*[HttpGet]
+        public async Task<IActionResult> SetPriority(int id)
+        {
+            var data = await noteService.GetNoteByIdAsync(id);
+            return View(data);
+        }*/
     }
 }

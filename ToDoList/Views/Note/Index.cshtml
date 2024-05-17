@@ -1,6 +1,10 @@
 ﻿@model IEnumerable<BLL.DTOs.NoteDTO>
 
-<div class="container p-4">
+<div class="align-content-end">
+    <partial name="_Notification" class="align-content-end" />
+</div>
+
+<div class="container">
     <div class="row pt-4">
         <div class="col-6">
             <h2 clss="text-primary">Your Notes</h2>
@@ -11,6 +15,9 @@
             </a>
         </div>
     </div>
+</div>
+<div>
+    <a class="btn btn-warning" asp-controller="Note" asp-action="SetPriority">Set Priority</a>
 </div>
 <br />
 
@@ -51,6 +58,7 @@
                                 <button class="btn btn-group btn-success" disabled>Finished</button>
                             }
                         }
+                        <a class="btn btn-group btn-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                         
                     </div>
                 </div>
@@ -59,4 +67,8 @@
 
     }
 </div>
-
+@section Scripts {
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}

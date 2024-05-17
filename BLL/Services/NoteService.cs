@@ -28,7 +28,8 @@ namespace BLL.Services
         public async Task<NoteDTO> CreateNoteAsync(NoteDTO noteDTO)
         {
             using var noteRepository = dataAccessFactory.CreateNoteData();
-            var note = mapper.Map<Note>(noteDTO);
+            noteDTO.Priority = noteRepository.GetMaximumPriority().Result+1;
+            var note = mapper.Map<Note>(noteDTO);   
             await noteRepository.CreateAsync(note);
             return mapper.Map<NoteDTO>(note);
         }
@@ -48,6 +49,7 @@ namespace BLL.Services
             using var noteRepository = dataAccessFactory.CreateNoteData();
 
             var notes = await noteRepository.ReadAllAsync();
+            notes = notes.OrderByDescending(n => n.Priority).Reverse().ToList();
             return mapper.Map<List<NoteDTO>>(notes);
         }
 
@@ -60,7 +62,10 @@ namespace BLL.Services
             {
                 return null;
             }
-
+            if(noteDto.Priority > int.MaxValue - 1)
+            {
+                noteDto.Priority = int.MaxValue - 1;
+            }
             mapper.Map(noteDto, note);
             await noteRepository.UpdateAsync(note);
             return mapper.Map<NoteDTO>(note);
@@ -88,7 +93,25 @@ namespace BLL.Services
             using var noteRepository = dataAccessFactory.CreateNoteData();
             var note = await noteRepository.ReadAsync(id);
             note.Status = "Done";
+            note.Priority = int.MaxValue;
             await noteRepository.UpdateAsync(note);
         }
+
+        public async Task<List<NoteDTO>> SetPriorityAsync(List<NoteDTO> notes)
+        {
+            using var noteRepository = dataAccessFactory.CreateNoteData();
+            var noteList = new List<Note>();
+            foreach (var note in notes)
+            {
+                var noteEntity = await noteRepository.ReadAsync(note.Id);
+                noteEntity.Priority = note.Priority;
+                noteList.Add(noteEntity);
+            }
+            await noteRepository.UpdateRangeAsync(noteList);
+            return mapper.Map<List<NoteDTO>>(noteList);
+        }
+
+
+        
     }
 }

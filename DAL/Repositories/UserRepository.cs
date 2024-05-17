@@ -65,6 +65,11 @@ namespace DAL.Repositories
             await _db.SaveChangesAsync();
             return existingUser;
         }
+
+        public Task<List<User>> UpdateRangeAsync(List<User> entities)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

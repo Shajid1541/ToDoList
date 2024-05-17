@@ -18,5 +18,7 @@ namespace DAL.Interfaces
         Task<TResult> UpdateAsync(TEntity entity);
 
         Task<bool> DeleteAsync(TKey id);
+
+        Task<List<TResult>> UpdateRangeAsync(List<TEntity> entities);
     }
 }

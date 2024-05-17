@@ -43,7 +43,8 @@ namespace ToDoList.Controllers
             }
             catch (Exception ex)
             {
-                return View(createNoteDTO);
+                var data = await noteService.CreateNoteViewAsync();
+                return View(data);
             }
             
             
@@ -77,11 +78,19 @@ namespace ToDoList.Controllers
             return RedirectToAction("Index");
         }
 
-        /*[HttpGet]
-        public async Task<IActionResult> SetPriority(int id)
+        [HttpGet]
+        public async Task<IActionResult> SetPriority()
         {
-            var data = await noteService.GetNoteByIdAsync(id);
+            var data = await noteService.GetAllNotesAsync();
             return View(data);
-        }*/
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SetPriority(List<NoteDTO> noteDTOs)
+        {
+            await noteService.SetPriorityAsync(noteDTOs);
+            return RedirectToAction("Index");
+        }
     }
 }

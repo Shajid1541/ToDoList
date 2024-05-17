@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DAL.Repositories
 {
-    public class NoteRepository : Repository, IRepository<Note, int, Note>
+    public class NoteRepository : Repository, INoteRepository
     {
         private readonly AppDbContext _db;
 
@@ -64,6 +64,22 @@ namespace DAL.Repositories
             _db.Entry(existingNote).CurrentValues.SetValues(entity);
             await _db.SaveChangesAsync();
             return existingNote;
+        }
+
+        public async Task<List<Note>> UpdateRangeAsync(List<Note> entities)
+        {
+            await _db.SaveChangesAsync();
+            return entities;
+        }
+
+        public Task<int> GetMaximumPriority()
+        {
+            var data = _db.Notes.Where(x => x.Priority != int.MaxValue);
+            if(data.Count() == 0)
+            {
+                return Task.FromResult(0);
+            }
+            return data.MaxAsync(x => x.Priority);
         }
     }
 }

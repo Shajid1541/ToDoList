@@ -65,5 +65,10 @@ namespace DAL.Repositories
             await _db.SaveChangesAsync();
             return existingCategory;
         }
+
+        public Task<List<Category>> UpdateRangeAsync(List<Category> entities)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

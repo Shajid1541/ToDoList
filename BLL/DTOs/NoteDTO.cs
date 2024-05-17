@@ -15,6 +15,6 @@ namespace BLL.DTOs
         public DateTime DueDate { get; set; }
         public int CategoryId { get; set; }
         public string Status { get; set; }
-        public int Priority { get; set; }
+        public int Priority { get; set; } = int.MaxValue;
     }
 }

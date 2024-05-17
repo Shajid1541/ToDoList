@@ -29,7 +29,7 @@ namespace DAL
             return new CategoryRepository(_dbContext);
         }
 
-        public IRepository<Note, int, Note> CreateNoteData()
+        public INoteRepository CreateNoteData()
         {
             return new NoteRepository(_dbContext);
         }

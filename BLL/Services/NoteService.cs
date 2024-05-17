@@ -64,7 +64,7 @@ namespace BLL.Services
             }
             if(noteDto.Priority > int.MaxValue - 1)
             {
-                noteDto.Priority = int.MaxValue - 1;
+                noteDto.Priority = dataAccessFactory.CreateNoteData().GetMaximumPriority().Result + 1;
             }
             mapper.Map(noteDto, note);
             await noteRepository.UpdateAsync(note);

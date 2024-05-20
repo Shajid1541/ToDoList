@@ -14,9 +14,9 @@ namespace ToDoList.Controllers
             this.noteService = noteService;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int[] filterOptions, string searchString = "", int pageNumber = 1, int pageSize = 3)
         {
-            var data = await noteService.GetAllNotesAsync();
+            var data = await noteService.GetNotesBySearchStringAsync(searchString, filterOptions, pageNumber, pageSize);
 
             return View(data);
         }

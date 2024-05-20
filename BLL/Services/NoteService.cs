@@ -4,6 +4,7 @@ using DAL;
 using DAL.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,9 +48,8 @@ namespace BLL.Services
         public async Task<List<NoteDTO>> GetAllNotesAsync()
         {
             using var noteRepository = dataAccessFactory.CreateNoteData();
-
             var notes = await noteRepository.ReadAllAsync();
-            notes = notes.OrderByDescending(n => n.Priority).Reverse().ToList();
+            notes = sortPriority(notes);
             return mapper.Map<List<NoteDTO>>(notes);
         }
 
@@ -111,7 +111,41 @@ namespace BLL.Services
             return mapper.Map<List<NoteDTO>>(noteList);
         }
 
+        public async Task<NoteViewDTO> GetNotesBySearchStringAsync(string searchString, int[] filterOptions, int pageNumber, int pageSize)
+        {
+            searchString = searchString.IsNullOrEmpty() ? "" : searchString;
+            using var noteRepository = dataAccessFactory.CreateNoteData();
+            var notes = await noteRepository.ReadAllAsync();
+            notes = notes.Where(n => n.NoteTitle.Contains(searchString) || n.NoteDescription.Contains(searchString)).ToList();
+            notes = sortPriority(notes);
+            var data = new NoteViewDTO();
+            if(filterOptions != null && filterOptions.Length > 0)
+            {
 
-        
+                notes = (from n in notes where filterOptions.Contains(n.categoryId) select n).ToList();
+            }
+            var totalItems = notes.Count;
+            var notesDto = mapper.Map<List<NoteDTO>>(notes.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList());
+            
+            data.Notes = new PagedResult<NoteDTO>
+            {
+                Items = notesDto,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalItems = totalItems
+            };
+            var categories = await categoryService.GetAllCategorysAsync();
+            
+            data.Categories = mapper.Map<List<CategoryDTO>>(categories);
+            return data;
+        }
+
+        private static List<Note> sortPriority(List<Note> notes)
+        {
+            notes = notes.OrderByDescending(n => n.Priority).Reverse().ToList();
+            return notes;
+        }
+
+
     }
 }

@@ -137,6 +137,8 @@ namespace BLL.Services
             var categories = await categoryService.GetAllCategorysAsync();
             
             data.Categories = mapper.Map<List<CategoryDTO>>(categories);
+            data.SearchString = searchString;
+            data.FilterOptions = filterOptions;
             return data;
         }
 

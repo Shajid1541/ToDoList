@@ -25,7 +25,7 @@
             </div>
             <div class="col-2 text-end">
                 <form asp-action="Index">
-                    <div class="input-group text-end">
+                    <div class="input-group text-end align-content-md-end">
                         <div class="dropdown">
                             <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-funnel"></i>
@@ -34,6 +34,16 @@
                                 <li class="px-3 py-2">
                                     @foreach (var category in Model.Categories)
                                     {
+                                        if (Model.FilterOptions.Contains(category.Id))
+                                        {
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="filterOptions" id="@category.Id" value="@category.Id" checked>
+                                                <label class="form-check-label" for="@category.Id">
+                                                    @category.Name
+                                                </label>
+                                            </div>
+                                            continue;
+                                        }
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" name="filterOptions" id="@category.Id" value="@category.Id">
                                             <label class="form-check-label" for="@category.Id">
@@ -60,8 +70,8 @@
         <div class="col-6">
             <h2 clss="text-primary">Your Notes</h2>
         </div>
-        <div class="col-6 text-end">
-            <a asp-controller="Note" asp-action="Create" class="btn btn-outline-success">
+        <div class="col-6 align-content-end text-end">
+            <a asp-controller="Note" asp-action="Create" class="btn btn-outline-success me-5">
                 <i class="bi bi-plus-circle-dotted"></i> &nbsp; Add Note
             </a>
         </div>
@@ -120,16 +130,24 @@
     }
 </div>
 
-<nav>
-    <ul class="pagination">
-        @for (var i = 1; i <= Model.Notes.TotalPages; i++)
-        {
-            <li class="page-item @(i == Model.Notes.PageNumber ? "active" : "")">
-                <a class="page-link" asp-action="Index" asp-route-filterOptions="@ViewData["FilterOptions"]" asp-route-pageNumber="@i" asp-route-pageSize="@Model.Notes.PageSize">@i</a>
-            </li>
-        }
-    </ul>
-</nav>
+<form id="paginationForm" method="get" asp-action="Index">
+    <input type="hidden" name="searchString" value="@Model.SearchString" />
+    @foreach (var filterOption in Model.FilterOptions)
+    {
+        <input type="hidden" name="filterOptions" value="@filterOption" />
+    }
+    <input type="hidden" name="pageSize" value="@Model.Notes.PageSize" />
+    <nav>
+        <ul class="pagination">
+            @for (var i = 1; i <= Model.Notes.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.Notes.PageNumber ? "active" : "")">
+                    <button type="submit" name="pageNumber" value="@i" class="page-link">@i</button>
+                </li>
+            }
+        </ul>
+    </nav>
+</form>
 
 @section Scripts {
     @{

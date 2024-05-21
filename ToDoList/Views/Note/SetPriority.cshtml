@@ -16,13 +16,20 @@
                 <tr>
                     <td>@Model.ElementAt(i).NoteTitle</td>
                     <td>
-                        <input type="number" name="[@i].Priority" value="@Model.ElementAt(i).Priority" class="form-control" />
-                        <input type="hidden" name="[@i].Id" value="@Model.ElementAt(i).Id" />
+                        @if (Model.ElementAt(i).Priority == int.MaxValue)
+                        {
+                            <span>Task Finished</span>
+                        }
+                        else
+                        {
+                            <input type="number" name="[@i].Priority" value="@Model.ElementAt(i).Priority" class="form-control" />
+                            <input type="hidden" name="[@i].Id" value="@Model.ElementAt(i).Id" />
+                        }
                     </td>
                 </tr>
             }
         </tbody>
     </table>
-    <button type="submit">Update</button>
+    <button type="submit" class="btn btn-outline-primary">Update</button>
 </form>
 

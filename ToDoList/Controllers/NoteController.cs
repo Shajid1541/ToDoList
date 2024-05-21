@@ -1,7 +1,6 @@
 ﻿using BLL.DTOs;
 using BLL.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ToDoList.Controllers
 {
@@ -17,6 +16,8 @@ namespace ToDoList.Controllers
             this.noteService = noteService;
         }
         #endregion
+
+        #region Methods
 
         #region Index
         public async Task<IActionResult> Index(int[] filterOptions, string searchString = "", int pageNumber = 1, int pageSize = 3)
@@ -110,6 +111,8 @@ namespace ToDoList.Controllers
 
             return RedirectToAction("Index");
         }
+        #endregion
+
         #endregion
     }
 }

@@ -77,8 +77,63 @@
         </div>
     </div>
 </div>
-<div>
-    <a class="btn btn-warning" asp-controller="Note" asp-action="SetPriority">Set Priority</a>
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <a class="btn btn-warning" asp-controller="Note" asp-action="SetPriority">Set Priority</a>
+        </div>
+        <div class="col-6 text-end">
+            <form id="paginationForm" method="get" asp-action="Index">
+                <input type="hidden" name="searchString" value="@Model.SearchString" />
+                @foreach (var filterOption in Model.FilterOptions)
+                {
+                    <input type="hidden" name="filterOptions" value="@filterOption" />
+                }
+                @* <input type="hidden" name="pageSize" value="@Model.Notes.PageSize" /> *@
+                <nav>
+                    <ul class="pagination">
+                        @for (var i = 1; i <= Model.Notes.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.Notes.PageNumber ? "active" : "")">
+                                <button type="submit" name="pageNumber" value="@i" class="page-link">@i</button>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+                <div class="form-group d-inline-block">
+                    <label for="pageSize">Items per page:</label>
+                    <select name="pageSize" class="form-select-sm d-inline-block" onchange="document.getElementById('paginationForm').submit();">
+                        @if (Model.Notes.PageSize == 5)
+                        {
+                            <option value="5" selected>5</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                        }
+                        else if (Model.Notes.PageSize == 10)
+                        {
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="20">20</option>
+                        }
+                        else if (Model.Notes.PageSize == 20)
+                        {
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="20" selected>20</option>
+                        }
+                        else
+                        {
+                            <option value="3" disabled selected></option>
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                        }
+                    </select>
+                    @* <button type="submit" class="page-link">Change</button> *@
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 <br />
 
@@ -130,24 +185,7 @@
     }
 </div>
 
-<form id="paginationForm" method="get" asp-action="Index">
-    <input type="hidden" name="searchString" value="@Model.SearchString" />
-    @foreach (var filterOption in Model.FilterOptions)
-    {
-        <input type="hidden" name="filterOptions" value="@filterOption" />
-    }
-    <input type="hidden" name="pageSize" value="@Model.Notes.PageSize" />
-    <nav>
-        <ul class="pagination">
-            @for (var i = 1; i <= Model.Notes.TotalPages; i++)
-            {
-                <li class="page-item @(i == Model.Notes.PageNumber ? "active" : "")">
-                    <button type="submit" name="pageNumber" value="@i" class="page-link">@i</button>
-                </li>
-            }
-        </ul>
-    </nav>
-</form>
+
 
 @section Scripts {
     @{

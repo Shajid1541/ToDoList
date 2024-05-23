@@ -139,7 +139,6 @@ namespace BLL.Services
             var data = new NoteViewDTO();
             if(filterOptions != null && filterOptions.Length > 0)
             {
-
                 notes = (from n in notes where filterOptions.Contains(n.categoryId) select n).ToList();
             }
             var totalItems = notes.Count;

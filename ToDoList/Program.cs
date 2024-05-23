@@ -26,6 +26,7 @@ namespace ToDoList
             builder.Services.AddScoped<IRepository<Note, int, Note>, NoteRepository>();
             builder.Services.AddScoped<DataAccessFactory>();
             builder.Services.AddScoped<NoteService>();
+            builder.Services.AddScoped<CategoryService>();
             //builder.Services.AddScoped<UserService>();
 
 

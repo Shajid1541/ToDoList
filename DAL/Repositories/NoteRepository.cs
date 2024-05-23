@@ -1,6 +1,7 @@
 ﻿using DAL.Data;
 using DAL.Interfaces;
 using DAL.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories
@@ -55,14 +56,17 @@ namespace DAL.Repositories
         #region ReadAllAsync
         public async Task<List<Note>> ReadAllAsync()
         {
-            return await _db.Notes.ToListAsync();
+            return await _db.Notes.FromSqlRaw("SELECT * FROM Notes").ToListAsync();
         }
         #endregion
 
         #region ReadAsync
         public async Task<Note> ReadAsync(int id)
         {
-            return await _db.Notes.FindAsync(id);
+            SqlParameter parameter = new SqlParameter("@Id", id);
+            var data = _db.Notes.FromSqlRaw<Note>("GetNotesById @Id", parameter).AsEnumerable().FirstOrDefault();
+
+            return await Task.FromResult(data);
         }
         #endregion
 

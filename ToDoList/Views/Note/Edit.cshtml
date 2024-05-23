@@ -1,0 +1,68 @@
+﻿@model BLL.DTOs.CreateNoteDTO
+
+
+<h2>Edit Note</h2>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="NoteDTO.Id" />
+            <input type="hidden" asp-for="NoteDTO.UserId" />
+
+            <div class="form-group">
+                <label asp-for="NoteDTO.NoteTitle" class="control-label"></label>
+                <input asp-for="NoteDTO.NoteTitle" class="form-control" />
+                <span asp-validation-for="NoteDTO.NoteTitle" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NoteDTO.NoteDescription" class="control-label"></label>
+                <textarea asp-for="NoteDTO.NoteDescription" class="form-control"></textarea>
+                <span asp-validation-for="NoteDTO.NoteDescription" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NoteDTO.DueDate" class="control-label"></label>
+                <input asp-for="NoteDTO.DueDate" class="form-control" />
+                <span asp-validation-for="NoteDTO.DueDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NoteDTO.CategoryId"></label>
+                <select asp-for="NoteDTO.CategoryId" class="form-control">
+                    <option value="">Select Category</option>
+                    @foreach (var category in Model.Categories)
+                    {
+                        if(category.Id == Model.NoteDTO.CategoryId)
+                        {
+                            <option value="@category.Id" selected>@category.Name</option>
+                            continue;
+                        }
+                        <option value="@category.Id">@category.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="NoteDTO.CategoryId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                @* <label asp-for="NoteDTO.Status" class="control-label"></label> *@
+                <input type="hidden" asp-for="NoteDTO.Status" class="form-control" value="Ongoing" />
+                <span asp-validation-for="NoteDTO.Status" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                @* <label asp-for="NoteDTO.Priority" class="control-label"></label> *@
+                <input type="hidden" asp-for="NoteDTO.Priority" class="form-control" />
+                <span asp-validation-for="NoteDTO.Priority" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-secondary mt-2">Update</button>
+        </form>
+        <div>
+            <a class="btn btn-warning mt-2" asp-action="Index">Back to List</a>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

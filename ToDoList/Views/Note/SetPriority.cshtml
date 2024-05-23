@@ -1,0 +1,35 @@
+﻿@model IEnumerable<BLL.DTOs.NoteDTO>;
+
+<h1>SetPriority</h1>
+
+<form asp-action="SetPriority" method="post">
+    <table>
+        <thead>
+            <tr>
+                <th>Note Title</th>
+                <th>Priority</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (var i = 0; i < Model.Count(); i++)
+            {
+                <tr>
+                    <td>@Model.ElementAt(i).NoteTitle</td>
+                    <td>
+                        @if (Model.ElementAt(i).Priority == int.MaxValue)
+                        {
+                            <span>Task Finished</span>
+                        }
+                        else
+                        {
+                            <input type="number" name="[@i].Priority" value="@Model.ElementAt(i).Priority" class="form-control" />
+                            <input type="hidden" name="[@i].Id" value="@Model.ElementAt(i).Id" />
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <button type="submit" class="btn btn-outline-primary">Update</button>
+</form>
+

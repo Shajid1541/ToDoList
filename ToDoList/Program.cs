@@ -1,4 +1,9 @@
+using BLL.Services;
+using DAL;
 using DAL.Data;
+using DAL.Interfaces;
+using DAL.Models;
+using DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System;
 
@@ -12,6 +17,18 @@ namespace ToDoList
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            // Register AutoMapper
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            builder.Services.AddScoped< IRepository<User, int, User>, UserRepository>();
+            builder.Services.AddScoped< IRepository<Category, int, Category>, CategoryRepository>();
+            builder.Services.AddScoped<IRepository<Note, int, Note>, NoteRepository>();
+            builder.Services.AddScoped<DataAccessFactory>();
+            builder.Services.AddScoped<NoteService>();
+            builder.Services.AddScoped<CategoryService>();
+            //builder.Services.AddScoped<UserService>();
+
 
             //add database connetction
             builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(
@@ -37,7 +54,7 @@ namespace ToDoList
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Note}/{action=Index}/{id?}");
 
             app.Run();
         }

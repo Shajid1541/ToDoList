@@ -1,0 +1,206 @@
+﻿@model BLL.DTOs.NoteViewDTO
+
+@{
+    var mappedCategories = new string[Model.Categories.Count];
+    for (int i = 0; i < Model.Categories.Count; i++)
+    {
+        mappedCategories[i] = Model.Categories[i].Name;
+    }
+}
+
+<div class="align-content-end">
+    <partial name="_Notification" class="align-content-end" />
+</div>
+
+<div>
+    <div class="container">
+        <div class="row pt-4">
+            <div class="col-10 d-flex">
+                <form asp-action="Index">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="searchString" />
+                        <button class="btn btn-outline-secondary" type="submit">Search</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-2 text-end">
+                <form asp-action="Index">
+                    <div class="input-group text-end align-content-md-end">
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-funnel"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                                <li class="px-3 py-2">
+                                    @foreach (var category in Model.Categories)
+                                    {
+                                        if (Model.FilterOptions.Contains(category.Id))
+                                        {
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="filterOptions" id="@category.Id" value="@category.Id" checked>
+                                                <label class="form-check-label" for="@category.Id">
+                                                    @category.Name
+                                                </label>
+                                            </div>
+                                            continue;
+                                        }
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="filterOptions" id="@category.Id" value="@category.Id">
+                                            <label class="form-check-label" for="@category.Id">
+                                                @category.Name
+                                            </label>
+                                        </div>
+                                    }
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <button class="btn btn-outline-secondary" type="submit">Filter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+
+<div class="container">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 clss="text-primary">Your Notes</h2>
+        </div>
+        <div class="col-6 align-content-end text-end">
+            <a asp-controller="Note" asp-action="Create" class="btn btn-outline-success me-5">
+                <i class="bi bi-plus-circle-dotted"></i> &nbsp; Add Note
+            </a>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <a class="btn btn-warning" asp-controller="Note" asp-action="SetPriority">Set Priority</a>
+        </div>
+        <div class="col-6 text-end">
+            <form id="paginationForm" method="get" asp-action="Index">
+                <input type="hidden" name="searchString" value="@Model.SearchString" />
+                @foreach (var filterOption in Model.FilterOptions)
+                {
+                    <input type="hidden" name="filterOptions" value="@filterOption" />
+                }
+                @* <input type="hidden" name="pageSize" value="@Model.Notes.PageSize" /> *@
+                <nav>
+                    <ul class="pagination">
+                        @for (var i = 1; i <= Model.Notes.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.Notes.PageNumber ? "active" : "")">
+                                <button type="submit" name="pageNumber" value="@i" class="page-link">@i</button>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+                <div class="form-group d-inline-block">
+                    <label for="pageSize">Items per page:</label>
+                    <select name="pageSize" class="form-select-sm d-inline-block" onchange="document.getElementById('paginationForm').submit();">
+                        @if (Model.Notes.PageSize == 5)
+                        {
+                            <option value="5" selected>5</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                        }
+                        else if (Model.Notes.PageSize == 10)
+                        {
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="20">20</option>
+                        }
+                        else if (Model.Notes.PageSize == 20)
+                        {
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="20" selected>20</option>
+                        }
+                        else
+                        {
+                            <option value="3" disabled selected>3</option>
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                        }
+                    </select>
+                    @* <button type="submit" class="page-link">Change</button> *@
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<br />
+
+
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    @foreach (var item in Model.Notes.Items)
+    {
+        <div class="col">
+            <div class="card border-dark mb-3" style="max-width: 20rem;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>@Html.DisplayFor(modelItem => item.NoteTitle)</div>
+                    <div>
+                        <button class="btn btn-primary" disabled>
+                            @mappedCategories[item.CategoryId - 1]
+                        </button>
+                    </div>
+                    <div>
+                        <button class="btn btn-primary" disabled>@item.DueDate.ToShortDateString()</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h4 class="card-text">@Html.DisplayFor(modelItem => item.NoteDescription)</h4>
+                    <div class="btn-group" role="group">
+                        @if (item.DueDate < DateTime.Now)
+                        {
+                            <button class="btn btn-group btn-warning" disabled>Expired</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-group btn-success" disabled>Valid</button>
+                        }
+                        <a class="btn btn-group btn-secondary" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        @{
+                            if (item.Status.Equals("Ongoing"))
+                            {
+                                <a class="btn btn-group btn-primary" 
+                                   asp-action="MarkDone"
+                                   asp-route-id="@item.Id"
+                                   asp-route-filterOptions="@string.Join(",", Model.FilterOptions)"
+                                   asp-route-searchString="@Model.SearchString"
+                                   asp-route-pageNumber="@Model.Notes.PageNumber"
+                                   asp-route-pageSize="@Model.Notes.PageSize">Done</a>
+                            }
+                            else{
+                                <button class="btn btn-group btn-success" disabled>Finished</button>
+                            }
+                        }
+                        <a class="btn btn-group btn-danger"
+                           asp-action="Delete"
+                           asp-route-id="@item.Id"
+                           asp-route-filterOptions="@string.Join(",", Model.FilterOptions)"
+                           asp-route-searchString="@Model.SearchString"
+                           asp-route-pageNumber="@Model.Notes.PageNumber"
+                           asp-route-pageSize="@Model.Notes.PageSize">Delete</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    }
+</div>
+
+
+
+@section Scripts {
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}

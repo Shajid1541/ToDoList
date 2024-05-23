@@ -1,6 +1,8 @@
 ﻿using BLL.DTOs;
 using BLL.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Drawing.Printing;
+using System.IO;
 
 namespace ToDoList.Controllers
 {
@@ -58,11 +60,17 @@ namespace ToDoList.Controllers
         #endregion
 
         #region MarkDone
-        public async Task<IActionResult> MarkDone(int id)
+        public async Task<IActionResult> MarkDone(int id, int[] filterOptions, string searchString, int pageNumber, int pageSize)
         {
             await noteService.MarkDoneAsync(id);
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new
+            {
+                filterOptions = filterOptions,
+                searchString = searchString,
+                pageNumber = pageNumber,
+                pageSize = pageSize
+            });
         }
         #endregion
 
@@ -86,11 +94,17 @@ namespace ToDoList.Controllers
         #endregion
 
         #region Delete
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id, int[] filterOptions, string searchString, int pageNumber, int pageSize)
         {
             await noteService.DeleteNoteAsync(id);
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new
+            {
+                filterOptions = filterOptions,
+                searchString = searchString,
+                pageNumber = pageNumber,
+                pageSize = pageSize
+            });
         }
         #endregion
 

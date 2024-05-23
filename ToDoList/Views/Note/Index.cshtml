@@ -170,13 +170,25 @@
                         @{
                             if (item.Status.Equals("Ongoing"))
                             {
-                                <a class="btn btn-group btn-primary" asp-action="MarkDone" asp-route-id="@item.Id">Done</a>
+                                <a class="btn btn-group btn-primary" 
+                                   asp-action="MarkDone"
+                                   asp-route-id="@item.Id"
+                                   asp-route-filterOptions="@string.Join(",", Model.FilterOptions)"
+                                   asp-route-searchString="@Model.SearchString"
+                                   asp-route-pageNumber="@Model.Notes.PageNumber"
+                                   asp-route-pageSize="@Model.Notes.PageSize">Done</a>
                             }
                             else{
                                 <button class="btn btn-group btn-success" disabled>Finished</button>
                             }
                         }
-                        <a class="btn btn-group btn-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        <a class="btn btn-group btn-danger"
+                           asp-action="Delete"
+                           asp-route-id="@item.Id"
+                           asp-route-filterOptions="@string.Join(",", Model.FilterOptions)"
+                           asp-route-searchString="@Model.SearchString"
+                           asp-route-pageNumber="@Model.Notes.PageNumber"
+                           asp-route-pageSize="@Model.Notes.PageSize">Delete</a>
                     </div>
                 </div>
             </div>

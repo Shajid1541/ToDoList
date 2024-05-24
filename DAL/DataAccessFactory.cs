@@ -19,17 +19,17 @@ namespace DAL
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
-        public IRepository<User, int, User> CreateUserData()
+        public UserRepository CreateUserData()
         {
             return new UserRepository(_dbContext);
         }
 
-        public IRepository<Category, int, Category> CreateCategoryData()
+        public CategoryRepository CreateCategoryData()
         {
             return new CategoryRepository(_dbContext);
         }
 
-        public INoteRepository CreateNoteData()
+        public NoteRepository CreateNoteData()
         {
             return new NoteRepository(_dbContext);
         }

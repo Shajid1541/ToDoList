@@ -12,14 +12,16 @@ namespace DAL.Repositories
 {
     public class UserRepository : Repository<User, int>
     {
+        #region Fields
         private readonly AppDbContext _db;
+        #endregion
 
+        #region Constructor
         public UserRepository(AppDbContext db) : base(db)
         {
             _db = db;
         }
-
-        
+        #endregion
     }
 
 }

@@ -22,7 +22,5 @@ namespace DAL.Repositories
             _db = db;
         }
         #endregion
-
-        
     }
 }

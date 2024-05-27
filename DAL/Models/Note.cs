@@ -12,7 +12,7 @@ namespace DAL.Models
     {
         [Key]
         public int Id { get; set; }
-        public int userId { get; set; }
+        public string userId { get; set; }
         public string NoteTitle { get; set; }
         public string NoteDescription { get; set; }
         public DateTime DueDate { get; set; }

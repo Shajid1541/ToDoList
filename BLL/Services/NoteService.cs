@@ -2,7 +2,9 @@
 using BLL.DTOs;
 using DAL;
 using DAL.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
 namespace BLL.Services
 {
@@ -12,27 +14,43 @@ namespace BLL.Services
         private readonly DataAccessFactory dataAccessFactory;
         private readonly CategoryService categoryService;
         private readonly IMapper mapper;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         #endregion
 
         #region Constructor
-        public NoteService(DataAccessFactory dataAccessFactory, IMapper mapper)
+        public NoteService(DataAccessFactory dataAccessFactory, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             this.dataAccessFactory = dataAccessFactory;
             categoryService = new CategoryService(dataAccessFactory, mapper);
             this.mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
         }
         #endregion
 
         #region Methods
+
+        public string GetUserId()
+        {
+            return _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        }
 
         #region Create
         public async Task<NoteDTO> CreateNoteAsync(NoteDTO noteDTO)
         {
             using var noteRepository = dataAccessFactory.CreateNoteData();
             noteDTO.Priority = noteRepository.GetMaximumPriority().Result+1;
-            var note = mapper.Map<Note>(noteDTO);   
-            await noteRepository.CreateAsync(note);
+            noteDTO.UserId = GetUserId();
 
+            var note = mapper.Map<Note>(noteDTO);
+            try
+            {
+                await noteRepository.CreateAsync(note);
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
+            
             return mapper.Map<NoteDTO>(note);
         }
         #endregion
@@ -134,6 +152,7 @@ namespace BLL.Services
             searchString = searchString.IsNullOrEmpty() ? "" : searchString;
             using var noteRepository = dataAccessFactory.CreateNoteData();
             var notes = await noteRepository.ReadAllAsync();
+            notes = notes.Where(x => x.userId == GetUserId()).ToList();
             notes = notes.Where(n => n.NoteTitle.Contains(searchString) || n.NoteDescription.Contains(searchString)).ToList();
             notes = sortPriority(notes);
             var data = new NoteViewDTO();

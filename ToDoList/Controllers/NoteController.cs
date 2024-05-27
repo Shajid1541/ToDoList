@@ -1,11 +1,15 @@
 ﻿using BLL.DTOs;
 using BLL.Services;
+using DAL.Utility;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using System.Drawing.Printing;
 using System.IO;
 
 namespace ToDoList.Controllers
 {
+    [Authorize(Roles = $"{SD.Role_Admin},{SD.Role_Customer}")]
     public class NoteController : Controller
     {
         #region Fields

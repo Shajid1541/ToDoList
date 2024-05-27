@@ -48,12 +48,14 @@ namespace DAL.Repositories
 
             return true;
         }
+
+
         #endregion
 
         #region Dispose
         public void Dispose()
         {
-            db.Dispose();
+            return;
         }
         #endregion
 

@@ -9,7 +9,7 @@ namespace BLL.DTOs
     public class NoteDTO
     {
         public int Id { get; set; }
-        public int UserId { get; set; } = 1;
+        public string UserId { get; set; } 
         public string NoteTitle { get; set; }
         public string NoteDescription { get; set; }
         public DateTime DueDate { get; set; }

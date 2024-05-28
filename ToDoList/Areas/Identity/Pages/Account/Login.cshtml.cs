@@ -114,6 +114,9 @@ namespace ToDoList.Areas.Identity.Pages.Account
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
+                    //store user data in session
+                    var user = await _signInManager.UserManager.FindByEmailAsync(Input.Email);
+                    HttpContext.Session.SetString("UserId", user.Id);
                     _logger.LogInformation("User logged in.");
                     return LocalRedirect(returnUrl);
                 }

@@ -15,6 +15,7 @@ namespace BLL.Services
         private readonly CategoryService categoryService;
         private readonly IMapper mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        
         #endregion
 
         #region Constructor
@@ -29,10 +30,13 @@ namespace BLL.Services
 
         #region Methods
 
+        #region GetUserId
         public string GetUserId()
         {
-            return _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //return _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return _httpContextAccessor.HttpContext.Session.GetString("UserId");
         }
+        #endregion
 
         #region Create
         public async Task<NoteDTO> CreateNoteAsync(NoteDTO noteDTO)
@@ -40,7 +44,7 @@ namespace BLL.Services
             using var noteRepository = dataAccessFactory.CreateNoteData();
             noteDTO.Priority = noteRepository.GetMaximumPriority().Result+1;
             noteDTO.UserId = GetUserId();
-
+             
             var note = mapper.Map<Note>(noteDTO);
             try
             {

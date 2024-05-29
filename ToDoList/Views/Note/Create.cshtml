@@ -4,6 +4,23 @@
 <h2>Create New Task</h2>
 
 <form asp-action="Create" method="post">
+    @{
+        if (Model.NoteDTO.errors.Count > 0)
+        {
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach (var error in Model.NoteDTO.errors)
+                    {
+                        <li>@error</li>
+                    }
+                </ul>
+            </div>
+        }
+    }
+    
+    <div>
+
+    </div>
     <div class="form-group">
         <label asp-for="NoteDTO.NoteTitle"></label>
         <input asp-for="NoteDTO.NoteTitle" class="form-control" />

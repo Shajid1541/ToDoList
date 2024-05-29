@@ -9,7 +9,7 @@ namespace BLL.DTOs
 {
     public class CreateNoteDTO
     {
-        public NoteDTO NoteDTO { get; set; }
+        public NoteDTO NoteDTO { get; set; } = new NoteDTO();
         public List<CategoryDTO> Categories { get; set; }
         
     }

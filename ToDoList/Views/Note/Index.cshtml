@@ -182,13 +182,23 @@
                                 <button class="btn btn-group btn-success" disabled>Finished</button>
                             }
                         }
-                        <a class="btn btn-group btn-danger"
-                           asp-action="Delete"
-                           asp-route-id="@item.Id"
-                           asp-route-filterOptions="@string.Join(",", Model.FilterOptions)"
-                           asp-route-searchString="@Model.SearchString"
-                           asp-route-pageNumber="@Model.Notes.PageNumber"
-                           asp-route-pageSize="@Model.Notes.PageSize">Delete</a>
+                        <span id="confirmDeleteSpan_@item.Id" style="display:none">
+                            <span> Are you sure</span>
+                            <a class="btn btn-group btn-danger"
+                               asp-action="Delete"
+                               asp-route-id="@item.Id"
+                               asp-route-filterOptions="@string.Join(",", Model.FilterOptions)"
+                               asp-route-searchString="@Model.SearchString"
+                               asp-route-pageNumber="@Model.Notes.PageNumber"
+                               asp-route-pageSize="@Model.Notes.PageSize">
+                                Yes
+                            </a>
+                            <a href="#" class="btn btn-primary" onclick="confirmDelete('@item.Id', false)">No</a>
+                        </span>
+                        <span id="deleteSpan_@item.Id">
+                            <a href="#" class="btn btn-danger" onclick="confirmDelete('@item.Id', true)">Delete</a>
+                        </span>
+                        
                     </div>
                 </div>
             </div>
@@ -203,4 +213,5 @@
     @{
         <partial name="_ValidationScriptsPartial" />
     }
+    <script src="~/js/customscript.js"></script>
 }

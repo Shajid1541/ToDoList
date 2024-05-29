@@ -60,9 +60,9 @@ namespace DAL.Repositories
         #endregion
 
         #region ReadAllAsync
-        public Task<List<TEntity>> ReadAllAsync()
+        public async Task<List<TEntity>> ReadAllAsync()
         {
-            return dbSet.ToListAsync();
+            return await dbSet.ToListAsync();
         }
         #endregion
 

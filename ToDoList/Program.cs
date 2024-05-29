@@ -9,6 +9,10 @@ using System;
 using Microsoft.AspNetCore.Identity;
 using DAL.Utility;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using FluentValidation.AspNetCore;
+using BLL.validators;
+using FluentValidation;
+using BLL.DTOs;
 
 namespace ToDoList
 {
@@ -20,6 +24,7 @@ namespace ToDoList
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddScoped<IValidator<NoteDTO>, NoteDTOValidator>();
 
             // Register AutoMapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -35,7 +40,7 @@ namespace ToDoList
             //register session
             builder.Services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.IdleTimeout = TimeSpan.FromSeconds(300);
             });
             builder.Services.AddHttpContextAccessor();
 
@@ -47,7 +52,7 @@ namespace ToDoList
             
             //Register Add Identity
             builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
-
+            
             //Configure path for Identity
             builder.Services.ConfigureApplicationCookie(options =>
             {

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using System.Drawing.Printing;
 using System.IO;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ToDoList.Controllers
 {
@@ -50,9 +51,14 @@ namespace ToDoList.Controllers
         {
             try
             {
-                await noteService.CreateNoteAsync(createNoteDTO.NoteDTO);
-
-                return RedirectToAction("Index");
+            var noteDto = await noteService.CreateNoteAsync(createNoteDTO.NoteDTO);
+            if (noteDto.errors.Count > 0)
+            {
+                var data = await noteService.CreateNoteViewAsync();
+                data.NoteDTO = noteDto;
+                return View(data);
+            }
+            return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
@@ -60,6 +66,7 @@ namespace ToDoList.Controllers
 
                 return View(data);
             }
+
         }
         #endregion
 

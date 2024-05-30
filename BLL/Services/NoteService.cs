@@ -4,7 +4,6 @@ using BLL.validators;
 using DAL;
 using DAL.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 
@@ -36,12 +35,14 @@ namespace BLL.Services
         public string GetUserId()
         {
             //return _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            _httpContextAccessor.HttpContext.Session.SetString("UserId", _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier));
-            return _httpContextAccessor.HttpContext.Session.GetString("UserId");
+            var userId = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            _httpContextAccessor.HttpContext?.Session.SetString("UserId", userId);
+
+            return _httpContextAccessor.HttpContext?.Session.GetString("UserId") ?? string.Empty;
         }
         #endregion
 
-        #region Create
+        #region CreateNoteAsync
         public async Task<NoteDTO> CreateNoteAsync(NoteDTO noteDTO)
         {
             noteDTO.UserId = GetUserId();
@@ -90,6 +91,7 @@ namespace BLL.Services
         {
             using var noteRepository = dataAccessFactory.CreateNoteData();
             var notes = await noteRepository.ReadAllAsync();
+            notes = notes.Where(x => x.userId == GetUserId()).ToList();
             notes = sortPriority(notes);
 
             return mapper.Map<List<NoteDTO>>(notes);

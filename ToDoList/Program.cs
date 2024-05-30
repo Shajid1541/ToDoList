@@ -30,9 +30,7 @@ namespace ToDoList
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             // Register services and repositories
-            builder.Services.AddScoped< IRepository<User, int>, UserRepository>();
-            builder.Services.AddScoped< IRepository<Category, int>, CategoryRepository>();
-            builder.Services.AddScoped<IRepository<Note, int>, NoteRepository>();
+            
             builder.Services.AddScoped<DataAccessFactory>();
             builder.Services.AddScoped<NoteService>();
             builder.Services.AddScoped<CategoryService>();

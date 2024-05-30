@@ -2,24 +2,25 @@
 using BLL.DTOs;
 using DAL.Models;
 using DAL;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BLL.Services
 {
     public class UserService
     {
+        #region Fields
         private readonly DataAccessFactory dataAccessFactory;
         private readonly IMapper mapper;
+        #endregion
 
+        #region Constructor
         public UserService(DataAccessFactory dataAccessFactory, IMapper mapper)
         {
             this.dataAccessFactory = dataAccessFactory;
             this.mapper = mapper;
         }
+        #endregion
+
+        #region Methods
 
         public async Task<UserDTO> CreateUserAsync(UserDTO UserDTO)
         {
@@ -66,5 +67,6 @@ namespace BLL.Services
 
             return await UserRepository.DeleteAsync(id);
         }
+        #endregion
     }
 }

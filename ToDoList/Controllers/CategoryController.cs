@@ -20,19 +20,46 @@ namespace ToDoList.Controllers
         }
         #endregion
 
+        #region Methods
+
+        #region Index
+        public async Task<IActionResult> Index()
+        {
+            var data = await categoryService.GetAllCategorysAsync();
+            return View(data);
+        }
+        #endregion
+
         #region Create
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            var data = new CategoryDTO();
+
+            return View(data);
         }
 
         [HttpPost]
-        public IActionResult Create(CategoryDTO categoryDTO)
+        public async Task<IActionResult> Create(CategoryDTO categoryDTO)
         {
-            var data = categoryService.CreateCategoryAsync(categoryDTO);
-            return RedirectToAction("Index","Note");
+            
+            var data = await categoryService.CreateCategoryAsync(categoryDTO);
+            if (data.errors.Count > 0)
+            {
+                return View(data);
+            }
+            return RedirectToAction("Index");
         }
+        #endregion
+
+        #region Delete
+        public async Task<IActionResult> Delete(int id)
+        {
+            var data = await categoryService.DeleteCategoryAsync(id);
+            return RedirectToAction("Index");
+        }
+        #endregion
+
         #endregion
     }
 }

@@ -1,10 +1,11 @@
 ﻿@model BLL.DTOs.NoteViewDTO
+@using System.Collections.Generic
 
 @{
-    var mappedCategories = new string[Model.Categories.Count];
-    for (int i = 0; i < Model.Categories.Count; i++)
+    Dictionary<int, string> mappedCategories = new Dictionary<int, string>();
+    foreach (var category in Model.Categories)
     {
-        mappedCategories[i] = Model.Categories[i].Name;
+        mappedCategories.Add(category.Id, category.Name);
     }
 }
 
@@ -148,7 +149,7 @@
                     <div>@Html.DisplayFor(modelItem => item.NoteTitle)</div>
                     <div>
                         <button class="btn btn-primary" disabled>
-                            @mappedCategories[item.CategoryId - 1]
+                            @mappedCategories[item.CategoryId]
                         </button>
                     </div>
                     <div>

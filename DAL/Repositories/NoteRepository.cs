@@ -33,6 +33,18 @@ namespace DAL.Repositories
         }
         #endregion
 
+        #region GetMaximumPriorityById
+        public Task<int> GetMaximumPriorityById(string userId)
+        {
+            var data = _db.Notes.Where(x => x.Priority != int.MaxValue && x.userId == userId);
+            if(data.Count() == 0)
+            {
+                return Task.FromResult(0);
+            }
+            return data.MaxAsync(x => x.Priority);
+        }
+        #endregion
+
         #endregion
     }
 }

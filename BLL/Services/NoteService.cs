@@ -57,7 +57,7 @@ namespace BLL.Services
                 return noteDTO;
             }
             using var noteRepository = dataAccessFactory.CreateNoteData();
-            noteDTO.Priority = noteRepository.GetMaximumPriority().Result+1;
+            noteDTO.Priority = noteRepository.GetMaximumPriorityById(noteDTO.UserId).Result+1;
             
              
             var note = mapper.Map<Note>(noteDTO);
@@ -109,7 +109,7 @@ namespace BLL.Services
             }
             if(noteDto.Priority > int.MaxValue - 1)
             {
-                noteDto.Priority = dataAccessFactory.CreateNoteData().GetMaximumPriority().Result + 1;
+                noteDto.Priority = dataAccessFactory.CreateNoteData().GetMaximumPriorityById(GetUserId()).Result + 1;
             }
             mapper.Map(noteDto, note);
             await noteRepository.UpdateAsync(note);
@@ -146,6 +146,9 @@ namespace BLL.Services
             note.Status = "Done";
             note.Priority = int.MaxValue;
             await noteRepository.UpdateAsync(note);
+            var notes = await noteRepository.ReadAllAsync();
+            notes = notes.Where(x => x.userId == GetUserId()).ToList();
+            await SynchronizePriority(noteRepository, notes);
         }
         #endregion
 
@@ -160,12 +163,31 @@ namespace BLL.Services
                 noteEntity.Priority = note.Priority;
                 noteList.Add(noteEntity);
             }
-            await noteRepository.UpdateRangeAsync(noteList);
+            noteList = await SynchronizePriority(noteRepository, noteList);
 
             return mapper.Map<List<NoteDTO>>(noteList);
         }
         #endregion
 
+        #region SynchronizePriority
+        private static async Task<List<Note>> SynchronizePriority(DAL.Repositories.NoteRepository noteRepository, List<Note> noteList)
+        {
+            var current = 1;
+            noteList = sortPriority(noteList);
+            foreach (var note in noteList)
+            {
+                if (note.Priority >= int.MaxValue)
+                {
+                    break;
+                }
+                note.Priority = current;
+                current++;
+            }
+            await noteRepository.UpdateRangeAsync(noteList);
+            return noteList;
+        }
+        #endregion
+        
         #region GetNotesBySearchString
         public async Task<NoteViewDTO> GetNotesBySearchStringAsync(string searchString, int[] filterOptions, int pageNumber, int pageSize)
         {

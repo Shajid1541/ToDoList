@@ -13,6 +13,8 @@ using FluentValidation.AspNetCore;
 using BLL.validators;
 using FluentValidation;
 using BLL.DTOs;
+using WebPWrecover.Services;
+using DAL.Services;
 
 namespace ToDoList
 {
@@ -47,10 +49,16 @@ namespace ToDoList
                     builder.Configuration.GetConnectionString("DefaultConnection")
                 ));
 
-            
+
             //Register Add Identity
-            builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
-            
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = true;
+                options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
+            })
+            .AddDefaultTokenProviders()
+            .AddEntityFrameworkStores<AppDbContext>();
+
             //Configure path for Identity
             builder.Services.ConfigureApplicationCookie(options =>
             {
@@ -61,8 +69,11 @@ namespace ToDoList
 
             //Add EmailSender
             builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
-            builder.Services.AddScoped<IEmailSender, EmailSender>();
-            
+
+            builder.Services.AddTransient<IEmailSender, EmailSender>();
+            builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

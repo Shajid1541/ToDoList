@@ -92,7 +92,6 @@ namespace ToDoList.Areas.Identity.Pages.Account
             }
 
             returnUrl ??= Url.Content("~/");
-
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
@@ -109,9 +108,25 @@ namespace ToDoList.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
+                var userr = await _signInManager.UserManager.FindByEmailAsync(Input.Email);
+                if (userr != null && !userr.EmailConfirmed)
+                {
+                    ModelState.AddModelError(string.Empty, "You must have a confirmed email to log in.");
+                    return Page();
+                }
+                if(userr == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    return Page();
+                }
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+                //check hashed password by hashing the input password
+                PasswordHasher<IdentityUser> passwordHasher = new PasswordHasher<IdentityUser>();
+                var hashedPassword = passwordHasher.HashPassword(userr, Input.Password);
+
+
+                var result = await _signInManager.PasswordSignInAsync(userr.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     //store user data in session

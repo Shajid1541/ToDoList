@@ -17,10 +17,14 @@ namespace ToDoList.Areas.Identity.Pages.Account
     public class ConfirmEmailModel : PageModel
     {
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly ILogger<ConfirmEmailModel> _logger;
 
-        public ConfirmEmailModel(UserManager<IdentityUser> userManager)
+        public ConfirmEmailModel(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, ILogger<ConfirmEmailModel> logger)
         {
             _userManager = userManager;
+            _signInManager = signInManager;
+            _logger = logger;
         }
 
         /// <summary>
@@ -41,9 +45,18 @@ namespace ToDoList.Areas.Identity.Pages.Account
             {
                 return NotFound($"Unable to load user with ID '{userId}'.");
             }
-
+            
             code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
             var result = await _userManager.ConfirmEmailAsync(user, code);
+            if (result.Succeeded)
+            {
+                var returnUrl = Url.Content("~/");
+                //store user data in session
+                //var userr = await _signInManager.UserManager.FindByEmailAsync(user.Email);
+                HttpContext.Session.SetString("UserId", user.Id);
+                _logger.LogInformation("User logged in.");
+                return LocalRedirect(returnUrl);
+            }
             StatusMessage = result.Succeeded ? "Thank you for confirming your email." : "Error confirming your email.";
             return Page();
         }

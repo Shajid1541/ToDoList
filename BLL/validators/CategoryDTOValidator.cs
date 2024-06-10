@@ -1,6 +1,5 @@
 ﻿using BLL.DTOs;
 using DAL;
-using DAL.Models;
 using FluentValidation;
 
 namespace BLL.validators

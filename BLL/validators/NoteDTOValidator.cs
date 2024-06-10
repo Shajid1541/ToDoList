@@ -24,11 +24,5 @@ namespace BLL.validators
                 }).WithMessage("Note title already exists");
         }
         #endregion
-
-        /*private async Task<bool> BeUniqueTitle(string title, CancellationToken cancellationToken)
-        {
-            var notes = await _noteRepository.ReadAllAsync();
-            return !notes.Any(note => note.NoteTitle == title);
-        }*/
     }
 }

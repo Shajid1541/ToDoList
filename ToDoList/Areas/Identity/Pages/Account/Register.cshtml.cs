@@ -183,10 +183,18 @@ namespace ToDoList.Areas.Identity.Pages.Account
                         pageHandler: null,
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
-                    var customMessage = $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.";
 
+                    // Create the custom message with HTML
+                    var customMessage = $@"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}' target='_blank' style='color: #1a73e8; text-decoration: none;'>clicking here</a>.";
+
+                    // Optionally, include a plain text version of the link
+                    var plainTextMessage = $"Please confirm your account by clicking the following link: {callbackUrl}";
+
+                    // Combine the HTML and plain text versions into one message
+
+                    var combinedMessage = customMessage + "<br><br>If you cannot click the link, copy and paste the following URL into your browser:<br>" + HtmlEncoder.Default.Encode(callbackUrl);
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        customMessage);
+                        combinedMessage);
                     //generation of email confirmation
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)

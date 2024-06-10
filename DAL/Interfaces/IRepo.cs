@@ -9,6 +9,7 @@ namespace DAL.Interfaces
 {
     public interface IRepository<TEntity, TKey> : IDisposable
     {
+        #region Methods
         Task<TEntity> CreateAsync(TEntity entity);
 
         Task<List<TEntity>> ReadAllAsync();
@@ -20,5 +21,6 @@ namespace DAL.Interfaces
         Task<bool> DeleteAsync(TKey id);
 
         Task<List<TEntity>> UpdateRangeAsync(List<TEntity> entities);
+        #endregion
     }
 }

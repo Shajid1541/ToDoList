@@ -2,11 +2,7 @@
 using BLL.Services;
 using DAL.Utility;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
-using System.Drawing.Printing;
-using System.IO;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ToDoList.Controllers
 {

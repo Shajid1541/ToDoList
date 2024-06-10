@@ -10,6 +10,7 @@ namespace DAL.Models
 {
     public class Note
     {
+        #region Properties
         [Key]
         public int Id { get; set; }
         public string userId { get; set; }
@@ -23,5 +24,6 @@ namespace DAL.Models
         public virtual User User { get; set; }
         [ForeignKey("categoryId")]
         public virtual Category Category { get; set; }
+        #endregion
     }
 }

@@ -10,9 +10,9 @@ namespace DAL.Models
 {
     public class User: IdentityUser
     {
-        
+        #region Properties
         [Required]
         public string Name { get; set; }
-
+        #endregion
     }
 }

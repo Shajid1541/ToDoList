@@ -1,19 +1,8 @@
-﻿using DAL;
-using DAL.Data;
-using DAL.Interfaces;
-using DAL.Models;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BLL.DTOs
+﻿namespace BLL.DTOs
 {
     public class NoteDTO
     {
+        #region Properties
         public int Id { get; set; }
         public string UserId { get; set; }
         
@@ -23,14 +12,16 @@ namespace BLL.DTOs
         public int CategoryId { get; set; }
         public string Status { get; set; }
         public int Priority { get; set; } = int.MaxValue;
-
         public List<string> errors;
+        #endregion
 
+        #region Constructor
         public NoteDTO()
         {
             errors = new List<string>();
             DueDate = DateTime.Now;
         }
+        #endregion
     }
 
     

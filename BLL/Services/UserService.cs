@@ -22,6 +22,7 @@ namespace BLL.Services
 
         #region Methods
 
+        #region CreateUserAsync
         public async Task<UserDTO> CreateUserAsync(UserDTO UserDTO)
         {
             using var UserRepository = dataAccessFactory.CreateUserData();
@@ -29,7 +30,9 @@ namespace BLL.Services
             await UserRepository.CreateAsync(User);
             return mapper.Map<UserDTO>(User);
         }
+        #endregion
 
+        #region GetUserByIdAsync
         public async Task<UserDTO> GetUserByIdAsync(int id)
         {
             using var UserRepository = dataAccessFactory.CreateUserData();
@@ -37,7 +40,9 @@ namespace BLL.Services
             var User = await UserRepository.ReadAsync(id);
             return mapper.Map<UserDTO>(User);
         }
+        #endregion
 
+        #region GetAllUsersAsync
         public async Task<List<UserDTO>> GetAllUsersAsync()
         {
             using var UserRepository = dataAccessFactory.CreateUserData();
@@ -45,7 +50,9 @@ namespace BLL.Services
             var Users = await UserRepository.ReadAllAsync();
             return mapper.Map<List<UserDTO>>(Users);
         }
+        #endregion
 
+        #region UpdateUserAsync
         public async Task<UserDTO> UpdateUserAsync(UserDTO UserDto)
         {
             using var UserRepository = dataAccessFactory.CreateUserData();
@@ -60,13 +67,17 @@ namespace BLL.Services
             await UserRepository.UpdateAsync(User);
             return mapper.Map<UserDTO>(User);
         }
+        #endregion
 
+        #region DeleteUserAsync
         public async Task<bool> DeleteUserAsync(int id)
         {
             using var UserRepository = dataAccessFactory.CreateUserData();
 
             return await UserRepository.DeleteAsync(id);
         }
+        #endregion
+
         #endregion
     }
 }

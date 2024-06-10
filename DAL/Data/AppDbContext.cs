@@ -7,14 +7,18 @@ namespace DAL.Data
 {
     public class AppDbContext : IdentityDbContext
     {
-
+        #region Constructor
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
              
         }
+        #endregion
+
+        #region Properties
         public DbSet<User> Users { get; set; }
         public DbSet<Note> Notes { get; set; }
         public DbSet<Category> Categories { get; set; }
+        #endregion
 
         /*protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

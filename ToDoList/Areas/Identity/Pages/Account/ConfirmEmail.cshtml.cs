@@ -51,13 +51,14 @@ namespace ToDoList.Areas.Identity.Pages.Account
             if (result.Succeeded)
             {
                 var returnUrl = Url.Content("~/");
-                //store user data in session
-                //var userr = await _signInManager.UserManager.FindByEmailAsync(user.Email);
                 HttpContext.Session.SetString("UserId", user.Id);
                 _logger.LogInformation("User logged in.");
-                return LocalRedirect(returnUrl);
+                StatusMessage = "Thank you for confirming your email. You will be redirected shortly.";
+                ViewData["ReturnUrl"] = returnUrl;
+                return Page();
             }
-            StatusMessage = result.Succeeded ? "Thank you for confirming your email." : "Error confirming your email.";
+
+            StatusMessage = "Error confirming your email.";
             return Page();
         }
     }

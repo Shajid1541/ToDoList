@@ -133,6 +133,7 @@ namespace ToDoList.Areas.Identity.Pages.Account
                     var user = await _signInManager.UserManager.FindByEmailAsync(Input.Email);
                     HttpContext.Session.SetString("UserId", user.Id);
                     _logger.LogInformation("User logged in.");
+                    TempData["Success"] = "Login successful";
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)

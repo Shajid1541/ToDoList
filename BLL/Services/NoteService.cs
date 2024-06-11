@@ -218,6 +218,10 @@ namespace BLL.Services
                 notes = (from n in notes where filterOptions.Contains(n.categoryId) select n).ToList();
             }
             var totalItems = notes.Count;
+            if((pageNumber - 1)*pageSize >= totalItems)
+            {
+                pageNumber--;
+            }
             var notesDto = mapper.Map<List<NoteDTO>>(notes.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList());
             
             data.Notes = new PagedResult<NoteDTO>

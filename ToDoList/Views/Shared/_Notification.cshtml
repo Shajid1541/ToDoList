@@ -7,7 +7,7 @@
         toastr.success('@TempData["success"]');
     </script> *@
     <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-body">
+        <div class="toast-body alert-success">
             @TempData["success"]
         </div>
     </div>
@@ -15,7 +15,6 @@
     <script>
         // Get the toast element
         const toast = document.querySelector('.toast');
-
         // Set a timeout to hide the toast after 500 milliseconds
         setTimeout(() => {
             toast.classList.remove('show'); // Hide the toast

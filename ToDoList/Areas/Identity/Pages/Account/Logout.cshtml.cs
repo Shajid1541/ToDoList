@@ -30,6 +30,7 @@ namespace ToDoList.Areas.Identity.Pages.Account
             HttpContext.Session.Clear();
             await _signInManager.SignOutAsync();
             _logger.LogInformation("User logged out.");
+            TempData["Success"] = "You have been logged out successfully";
             if (returnUrl != null)
             {
                 return LocalRedirect(returnUrl);

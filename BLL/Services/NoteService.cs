@@ -3,7 +3,9 @@ using BLL.DTOs;
 using BLL.validators;
 using DAL;
 using DAL.Models;
+using DAL.Repositories;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 
@@ -12,20 +14,22 @@ namespace BLL.Services
     public class NoteService
     {
         #region Fields
-        private readonly DataAccessFactory dataAccessFactory;
         private readonly CategoryService categoryService;
         private readonly IMapper mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly string userId;
+        private readonly NoteRepository noteRepository;
         
         #endregion
 
         #region Constructor
-        public NoteService(DataAccessFactory dataAccessFactory, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        public NoteService(NoteRepository noteRepository, IMapper mapper, IHttpContextAccessor httpContextAccessor, CategoryRepository categoryRepository)
         {
-            this.dataAccessFactory = dataAccessFactory;
-            categoryService = new CategoryService(dataAccessFactory, mapper);
+            this.noteRepository = noteRepository;
+            categoryService = new CategoryService(categoryRepository, mapper);
             this.mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
+            this.userId = GetUserId();
         }
         #endregion
 
@@ -46,7 +50,7 @@ namespace BLL.Services
         public async Task<NoteDTO> CreateNoteAsync(NoteDTO noteDTO)
         {
             noteDTO.UserId = GetUserId();
-            var validator = new NoteDTOValidator(dataAccessFactory);
+            var validator = new NoteDTOValidator(noteRepository);
             var validationResult = await validator.ValidateAsync(noteDTO);
             if (!validationResult.IsValid)
             {
@@ -56,7 +60,6 @@ namespace BLL.Services
                 }
                 return noteDTO;
             }
-            using var noteRepository = dataAccessFactory.CreateNoteData();
             noteDTO.Priority = noteRepository.GetMaximumPriorityById(noteDTO.UserId).Result+1;
             
              
@@ -77,9 +80,14 @@ namespace BLL.Services
         #region GetNoteById
         public async Task<CreateNoteDTO> GetNoteByIdAsync(int id)
         {
-            using var noteRepository = dataAccessFactory.CreateNoteData();
+            var userId = GetUserId();
             var note = new CreateNoteDTO();
             note.NoteDTO = mapper.Map<NoteDTO>(await noteRepository.ReadAsync(id));
+            if( note.NoteDTO == null || !note.NoteDTO.UserId.Equals(userId))
+            {
+                return null;
+            }
+
             note.Categories = await categoryService.GetAllCategorysAsync();
 
             return note;
@@ -89,7 +97,6 @@ namespace BLL.Services
         #region GetAllNotes
         public async Task<List<NoteDTO>> GetAllNotesAsync()
         {
-            using var noteRepository = dataAccessFactory.CreateNoteData();
             var notes = await noteRepository.ReadAllAsync();
             notes = notes.Where(x => x.userId == GetUserId()).ToList();
             notes = sortPriority(notes);
@@ -101,15 +108,15 @@ namespace BLL.Services
         #region UpdateNote
         public async Task<NoteDTO> UpdateNoteAsync(NoteDTO noteDto)
         {
-            using var noteRepository = dataAccessFactory.CreateNoteData();
+            var userId = GetUserId();
             var note = await noteRepository.ReadAsync(noteDto.Id);
-            if (note == null)
+            if (note == null || !note.userId.Equals(userId))
             {
                 return null;
             }
             if(noteDto.Priority > int.MaxValue - 1)
             {
-                noteDto.Priority = dataAccessFactory.CreateNoteData().GetMaximumPriorityById(GetUserId()).Result + 1;
+                noteDto.Priority = noteRepository.GetMaximumPriorityById(GetUserId()).Result + 1;
             }
             mapper.Map(noteDto, note);
             await noteRepository.UpdateAsync(note);
@@ -121,7 +128,12 @@ namespace BLL.Services
         #region DeleteNote
         public async Task<bool> DeleteNoteAsync(int id)
         {
-            using var noteRepository = dataAccessFactory.CreateNoteData();
+            var userId = GetUserId();
+            var note = await noteRepository.ReadAsync(id);
+            if (note == null || !note.userId.Equals(userId))
+            {
+                return false;
+            }
 
             return await noteRepository.DeleteAsync(id);
         }
@@ -139,23 +151,27 @@ namespace BLL.Services
         #endregion
 
         #region MarkDone
-        public async Task MarkDoneAsync(int id)
+        public async Task<bool> MarkDoneAsync(int id)
         {
-            using var noteRepository = dataAccessFactory.CreateNoteData();
+            var userId = GetUserId();
             var note = await noteRepository.ReadAsync(id);
+            if (note == null || !note.userId.Equals(userId))
+            {
+                return false;
+            }
             note.Status = "Done";
             note.Priority = int.MaxValue;
             await noteRepository.UpdateAsync(note);
             var notes = await noteRepository.ReadAllAsync();
             notes = notes.Where(x => x.userId == GetUserId()).ToList();
             await SynchronizePriority(noteRepository, notes);
+            return true;
         }
         #endregion
 
         #region SetPriority
         public async Task<List<NoteDTO>> SetPriorityAsync(List<NoteDTO> notes)
         {
-            using var noteRepository = dataAccessFactory.CreateNoteData();
             var noteList = new List<Note>();
             foreach (var note in notes)
             {
@@ -192,7 +208,6 @@ namespace BLL.Services
         public async Task<NoteViewDTO> GetNotesBySearchStringAsync(string searchString, int[] filterOptions, int pageNumber, int pageSize)
         {
             searchString = searchString.IsNullOrEmpty() ? "" : searchString;
-            using var noteRepository = dataAccessFactory.CreateNoteData();
             var notes = await noteRepository.ReadAllAsync();
             notes = notes.Where(x => x.userId == GetUserId()).ToList();
             notes = notes.Where(n => n.NoteTitle.Contains(searchString) || n.NoteDescription.Contains(searchString)).ToList();
@@ -216,7 +231,7 @@ namespace BLL.Services
             
             data.Categories = mapper.Map<List<CategoryDTO>>(categories);
             data.SearchString = searchString;
-            data.FilterOptions = filterOptions;
+            data.FilterOptions = filterOptions ?? [];
 
             return data;
         }

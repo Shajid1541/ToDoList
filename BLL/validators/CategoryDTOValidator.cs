@@ -1,5 +1,6 @@
 ﻿using BLL.DTOs;
 using DAL;
+using DAL.Repositories;
 using FluentValidation;
 
 namespace BLL.validators
@@ -7,18 +8,18 @@ namespace BLL.validators
     public class CategoryDTOValidator: AbstractValidator<CategoryDTO>
     {
         #region Fields
-        private readonly DataAccessFactory dataAccessFactory;
+        private readonly CategoryRepository categoryRepository;
         #endregion
 
         #region Constructor
-        public CategoryDTOValidator(DataAccessFactory dataAccessFactory)
+        public CategoryDTOValidator(CategoryRepository categoryRepository)
         {
-            this.dataAccessFactory = dataAccessFactory;
+            this.categoryRepository = categoryRepository;
 
             RuleFor(category => category.Name)
                 .MustAsync(async (Category, Name, cancellation) =>
                 {
-                    var categorys = await dataAccessFactory.CreateCategoryData().ReadAllAsync();
+                    var categorys = await categoryRepository.ReadAllAsync();
                     return !categorys.Any(category => category.Name == Name);
                 }).WithMessage("Category already exists");
         }

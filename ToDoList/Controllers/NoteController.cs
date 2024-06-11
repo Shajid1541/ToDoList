@@ -69,7 +69,11 @@ namespace ToDoList.Controllers
         #region MarkDone
         public async Task<IActionResult> MarkDone(int id, int[] filterOptions, string searchString, int pageNumber, int pageSize)
         {
-            await noteService.MarkDoneAsync(id);
+            var data = await noteService.MarkDoneAsync(id);
+            if (!data)
+            {
+                return NotFound();
+            }
 
             return RedirectToAction("Index", new
             {
@@ -86,6 +90,10 @@ namespace ToDoList.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var data = await noteService.GetNoteByIdAsync(id);
+            if (data == null)
+            {
+                return NotFound();
+            }
 
             return View(data);
         }
@@ -103,7 +111,11 @@ namespace ToDoList.Controllers
         #region Delete
         public async Task<IActionResult> Delete(int id, int[] filterOptions, string searchString, int pageNumber, int pageSize)
         {
-            await noteService.DeleteNoteAsync(id);
+            var data = await noteService.DeleteNoteAsync(id);
+            if (!data)
+            {
+                return NotFound();
+            }
 
             return RedirectToAction("Index", new
             {

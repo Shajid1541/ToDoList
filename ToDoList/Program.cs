@@ -33,7 +33,8 @@ namespace ToDoList
 
             // Register services and repositories
             
-            builder.Services.AddScoped<DataAccessFactory>();
+            builder.Services.AddScoped<NoteRepository>();
+            builder.Services.AddScoped<CategoryRepository>();
             builder.Services.AddScoped<NoteService>();
             builder.Services.AddScoped<CategoryService>();
 

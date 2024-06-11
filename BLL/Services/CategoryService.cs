@@ -3,20 +3,21 @@ using BLL.DTOs;
 using DAL.Models;
 using DAL;
 using BLL.validators;
+using DAL.Repositories;
 
 namespace BLL.Services
 {
     public class CategoryService
     {
         #region Fields
-        private readonly DataAccessFactory dataAccessFactory;
+        private readonly CategoryRepository categoryRepository;
         private readonly IMapper mapper;
         #endregion
 
         #region Constructor
-        public CategoryService(DataAccessFactory dataAccessFactory, IMapper mapper)
+        public CategoryService(CategoryRepository categoryRepository, IMapper mapper)
         {
-            this.dataAccessFactory = dataAccessFactory;
+            this.categoryRepository = categoryRepository;
             this.mapper = mapper;
         }
         #endregion
@@ -26,7 +27,7 @@ namespace BLL.Services
         #region CreateCategoryAsync
         public async Task<CategoryDTO> CreateCategoryAsync(CategoryDTO CategoryDTO)
         {
-            var validator = new CategoryDTOValidator(dataAccessFactory);
+            var validator = new CategoryDTOValidator(categoryRepository);
             var validationResult = await validator.ValidateAsync(CategoryDTO);
             if (!validationResult.IsValid)
             {
@@ -36,9 +37,9 @@ namespace BLL.Services
                 }
                 return CategoryDTO;
             }
-            using var CategoryRepository = dataAccessFactory.CreateCategoryData();
+            
             var Category = mapper.Map<Category>(CategoryDTO);
-            await CategoryRepository.CreateAsync(Category);
+            await categoryRepository.CreateAsync(Category);
             return mapper.Map<CategoryDTO>(Category);
         }
         #endregion
@@ -46,9 +47,7 @@ namespace BLL.Services
         #region GetCategoryByIdAsync
         public async Task<CategoryDTO> GetCategoryByIdAsync(int id)
         {
-            using var CategoryRepository = dataAccessFactory.CreateCategoryData();
-
-            var Category = await CategoryRepository.ReadAsync(id);
+            var Category = await categoryRepository.ReadAsync(id);
             return mapper.Map<CategoryDTO>(Category);
         }
         #endregion
@@ -56,9 +55,7 @@ namespace BLL.Services
         #region GetAllCategorysAsync
         public async Task<List<CategoryDTO>> GetAllCategorysAsync()
         {
-            using var CategoryRepository = dataAccessFactory.CreateCategoryData();
-
-            var Categorys = await CategoryRepository.ReadAllAsync();
+            var Categorys = await categoryRepository.ReadAllAsync();
             return mapper.Map<List<CategoryDTO>>(Categorys);
         }
         #endregion
@@ -66,16 +63,14 @@ namespace BLL.Services
         #region UpdateCategoryAsync
         public async Task<CategoryDTO> UpdateCategoryAsync(CategoryDTO CategoryDto)
         {
-            using var CategoryRepository = dataAccessFactory.CreateCategoryData();
-
-            var Category = await CategoryRepository.ReadAsync(CategoryDto.Id);
+            var Category = await categoryRepository.ReadAsync(CategoryDto.Id);
             if (Category == null)
             {
                 return null;
             }
 
             mapper.Map(CategoryDto, Category);
-            await CategoryRepository.UpdateAsync(Category);
+            await categoryRepository.UpdateAsync(Category);
             return mapper.Map<CategoryDTO>(Category);
         }
         #endregion
@@ -83,9 +78,7 @@ namespace BLL.Services
         #region DeleteCategoryAsync
         public async Task<bool> DeleteCategoryAsync(int id)
         {
-            using var CategoryRepository = dataAccessFactory.CreateCategoryData();
-
-            return await CategoryRepository.DeleteAsync(id);
+            return await categoryRepository.DeleteAsync(id);
         }
         #endregion
 

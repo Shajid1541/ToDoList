@@ -1,20 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BLL.DTOs
+﻿namespace BLL.DTOs
 {
     public class NoteDTO
     {
+        #region Properties
         public int Id { get; set; }
-        public int UserId { get; set; } = 1;
+        public string UserId { get; set; }
+        
         public string NoteTitle { get; set; }
         public string NoteDescription { get; set; }
         public DateTime DueDate { get; set; }
         public int CategoryId { get; set; }
         public string Status { get; set; }
         public int Priority { get; set; } = int.MaxValue;
+        public List<string> errors;
+        #endregion
+
+        #region Constructor
+        public NoteDTO()
+        {
+            errors = new List<string>();
+            DueDate = DateTime.Now;
+        }
+        #endregion
     }
+
+    
 }

@@ -1,10 +1,11 @@
 ﻿@model BLL.DTOs.NoteViewDTO
+@using System.Collections.Generic
 
 @{
-    var mappedCategories = new string[Model.Categories.Count];
-    for (int i = 0; i < Model.Categories.Count; i++)
+    Dictionary<int, string> mappedCategories = new Dictionary<int, string>();
+    foreach (var category in Model.Categories)
     {
-        mappedCategories[i] = Model.Categories[i].Name;
+        mappedCategories.Add(category.Id, category.Name);
     }
 }
 
@@ -19,6 +20,12 @@
                 <form asp-action="Index">
                     <div class="input-group">
                         <input type="text" class="form-control" placeholder="Search" name="searchString" />
+                        <input hidden name="pageSize" id="hiddenPageSize" value="@Model.Notes.PageSize"/>
+                        <input type="hidden" name="searchString" value="@Model.SearchString" />
+                        @foreach (var filterOption in Model.FilterOptions)
+                        {
+                            <input type="hidden" name="filterOptions" value="@filterOption" />
+                        }
                         <button class="btn btn-outline-secondary" type="submit">Search</button>
                     </div>
                 </form>
@@ -102,7 +109,7 @@
                 </nav>
                 <div class="form-group d-inline-block">
                     <label for="pageSize">Items per page:</label>
-                    <select name="pageSize" class="form-select-sm d-inline-block" onchange="document.getElementById('paginationForm').submit();">
+                    <select name="pageSize" id="existingPageSize" class="form-select-sm d-inline-block" onchange="document.getElementById('paginationForm').submit();">
                         @if (Model.Notes.PageSize == 5)
                         {
                             <option value="5" selected>5</option>
@@ -148,7 +155,7 @@
                     <div>@Html.DisplayFor(modelItem => item.NoteTitle)</div>
                     <div>
                         <button class="btn btn-primary" disabled>
-                            @mappedCategories[item.CategoryId - 1]
+                            @mappedCategories[item.CategoryId]
                         </button>
                     </div>
                     <div>
@@ -157,6 +164,22 @@
                 </div>
                 <div class="card-body">
                     <h4 class="card-text">@Html.DisplayFor(modelItem => item.NoteDescription)</h4>
+                    <span id="confirmDeleteSpan_@item.Id" style="display:none">
+                        <span> Confirm Delete</span>
+                        <a class="btn btn-group btn-danger"
+                           asp-action="Delete"
+                           asp-route-id="@item.Id"
+                           asp-route-filterOptions="@string.Join(",", Model.FilterOptions)"
+                           asp-route-searchString="@Model.SearchString"
+                           asp-route-pageNumber="@Model.Notes.PageNumber"
+                           asp-route-pageSize="@Model.Notes.PageSize">
+                            Yes
+                        </a>
+                        <a href="#" class="btn btn-group btn-primary" onclick="confirmDelete('@item.Id', false)">No</a>
+                    </span>
+                    <span id="deleteSpan_@item.Id">
+                        <a href="#" class="btn btn-group btn-danger" onclick="confirmDelete('@item.Id', true)">Delete</a>
+                    </span>
                     <div class="btn-group" role="group">
                         @if (item.DueDate < DateTime.Now)
                         {
@@ -170,26 +193,22 @@
                         @{
                             if (item.Status.Equals("Ongoing"))
                             {
-                                <a class="btn btn-group btn-primary" 
-                                   asp-action="MarkDone"
-                                   asp-route-id="@item.Id"
-                                   asp-route-filterOptions="@string.Join(",", Model.FilterOptions)"
-                                   asp-route-searchString="@Model.SearchString"
-                                   asp-route-pageNumber="@Model.Notes.PageNumber"
-                                   asp-route-pageSize="@Model.Notes.PageSize">Done</a>
+                                        <a class="btn btn-group btn-primary" 
+                                           asp-action="MarkDone"
+                                           asp-route-id="@item.Id"
+                                           asp-route-filterOptions="@string.Join(",", Model.FilterOptions)"
+                                           asp-route-searchString="@Model.SearchString"
+                                           asp-route-pageNumber="@Model.Notes.PageNumber"
+                                           asp-route-pageSize="@Model.Notes.PageSize">Done</a>
                             }
                             else{
-                                <button class="btn btn-group btn-success" disabled>Finished</button>
+                                        <button class="btn btn-group btn-success" disabled>Finished</button>
                             }
                         }
-                        <a class="btn btn-group btn-danger"
-                           asp-action="Delete"
-                           asp-route-id="@item.Id"
-                           asp-route-filterOptions="@string.Join(",", Model.FilterOptions)"
-                           asp-route-searchString="@Model.SearchString"
-                           asp-route-pageNumber="@Model.Notes.PageNumber"
-                           asp-route-pageSize="@Model.Notes.PageSize">Delete</a>
+                        
+                        
                     </div>
+                    
                 </div>
             </div>
         </div>
@@ -201,6 +220,7 @@
 
 @section Scripts {
     @{
-        <partial name="_ValidationScriptsPartial" />
+                <partial name="_ValidationScriptsPartial" />
     }
+    <script src="~/js/customscript.js"></script>
 }

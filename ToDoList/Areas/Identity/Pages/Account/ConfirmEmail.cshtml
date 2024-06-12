@@ -1,0 +1,29 @@
+﻿@page
+@model ToDoList.Areas.Identity.Pages.Account.ConfirmEmailModel
+@{
+    ViewData["Title"] = "Confirm Email";
+    var returnUrl = ViewData["ReturnUrl"] ?? "~/";
+}
+
+<div class="alert alert-success">
+    @Model.StatusMessage
+</div>
+
+<div>
+    You will be redirected in <span id="countdown">5</span> seconds.
+</div>
+
+<script type="text/javascript">
+    var seconds = 5; // Set the countdown time
+    var countdownElement = document.getElementById('countdown');
+
+    function updateTimer() {
+        seconds--;
+        countdownElement.textContent = seconds;
+        if (seconds <= 0) {
+            window.location.href = '@returnUrl';
+        }
+    }
+
+    setInterval(updateTimer, 1000); // Update the timer every second
+</script>

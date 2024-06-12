@@ -12,26 +12,39 @@ namespace DAL
 {
     public class DataAccessFactory
     {
+        #region Fields
         private readonly AppDbContext _dbContext;
+        #endregion
 
+        #region Constructor
         public DataAccessFactory(AppDbContext dbContext)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
+        #endregion
 
-        public IRepository<User, int, User> CreateUserData()
+        #region Methods
+
+        #region CreateCategoryData
+        public UserRepository CreateUserData()
         {
             return new UserRepository(_dbContext);
         }
+        #endregion
 
-        public IRepository<Category, int, Category> CreateCategoryData()
+        #region CreateCategoryData
+        public CategoryRepository CreateCategoryData()
         {
             return new CategoryRepository(_dbContext);
         }
+        #endregion
 
-        public INoteRepository CreateNoteData()
+        #region CreateNoteData
+        public NoteRepository CreateNoteData()
         {
             return new NoteRepository(_dbContext);
         }
+        #endregion
+        #endregion
     }
 }

@@ -1,11 +1,12 @@
 ﻿using BLL.DTOs;
 using BLL.Services;
+using DAL.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Drawing.Printing;
-using System.IO;
 
 namespace ToDoList.Controllers
 {
+    [Authorize(Roles = $"{SD.Role_Admin},{SD.Role_Customer}")]
     public class NoteController : Controller
     {
         #region Fields
@@ -46,8 +47,14 @@ namespace ToDoList.Controllers
         {
             try
             {
-                await noteService.CreateNoteAsync(createNoteDTO.NoteDTO);
-
+                var noteDto = await noteService.CreateNoteAsync(createNoteDTO.NoteDTO);
+                if (noteDto.errors.Count > 0)
+                {
+                    var data = await noteService.CreateNoteViewAsync();
+                    data.NoteDTO = noteDto;
+                    return View(data);
+                }
+                TempData["Success"] = "Note created successfully";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
@@ -56,13 +63,19 @@ namespace ToDoList.Controllers
 
                 return View(data);
             }
+
         }
         #endregion
 
         #region MarkDone
-        public async Task<IActionResult> MarkDone(int id, int[] filterOptions, string searchString, int pageNumber, int pageSize)
+        public async Task<IActionResult> MarkDone(int id, int[] filterOptions, string searchString, int pageNumber=1, int pageSize = 3)
         {
-            await noteService.MarkDoneAsync(id);
+            var data = await noteService.MarkDoneAsync(id);
+            if (!data)
+            {
+                return NotFound();
+            }
+            TempData["Success"] = "Note marked as done successfully";
 
             return RedirectToAction("Index", new
             {
@@ -79,6 +92,10 @@ namespace ToDoList.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var data = await noteService.GetNoteByIdAsync(id);
+            if (data == null)
+            {
+                return NotFound();
+            }
 
             return View(data);
         }
@@ -88,15 +105,21 @@ namespace ToDoList.Controllers
         public async Task<IActionResult> Edit(NoteDTO noteDTO)
         {
             await noteService.UpdateNoteAsync(noteDTO);
+            TempData["Success"] = "Note updated successfully";
 
             return RedirectToAction("Index");
         }
         #endregion
 
         #region Delete
-        public async Task<IActionResult> Delete(int id, int[] filterOptions, string searchString, int pageNumber, int pageSize)
+        public async Task<IActionResult> Delete(int id, int[] filterOptions, string searchString, int pageNumber=1, int pageSize=3)
         {
-            await noteService.DeleteNoteAsync(id);
+            var data = await noteService.DeleteNoteAsync(id);
+            if (!data)
+            {
+                return NotFound();
+            }
+            TempData["Success"] = "Note deleted successfully";
 
             return RedirectToAction("Index", new
             {
@@ -122,6 +145,7 @@ namespace ToDoList.Controllers
         public async Task<IActionResult> SetPriority(List<NoteDTO> noteDTOs)
         {
             await noteService.SetPriorityAsync(noteDTOs);
+            TempData["Success"] = "Priority set successfully";
 
             return RedirectToAction("Index");
         }

@@ -7,18 +7,20 @@ using System.Threading.Tasks;
 
 namespace DAL.Interfaces
 {
-    public interface IRepository<TEntity, TKey, TResult> : IDisposable
+    public interface IRepository<TEntity, TKey> : IDisposable
     {
-        Task<TResult> CreateAsync(TEntity entity);
+        #region Methods
+        Task<TEntity> CreateAsync(TEntity entity);
 
         Task<List<TEntity>> ReadAllAsync();
 
         Task<TEntity> ReadAsync(TKey id);
 
-        Task<TResult> UpdateAsync(TEntity entity);
+        Task<TEntity> UpdateAsync(TEntity entity);
 
         Task<bool> DeleteAsync(TKey id);
 
-        Task<List<TResult>> UpdateRangeAsync(List<TEntity> entities);
+        Task<List<TEntity>> UpdateRangeAsync(List<TEntity> entities);
+        #endregion
     }
 }

@@ -6,6 +6,15 @@ using DAL.Models;
 using DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System;
+using Microsoft.AspNetCore.Identity;
+using DAL.Utility;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using FluentValidation.AspNetCore;
+using BLL.validators;
+using FluentValidation;
+using BLL.DTOs;
+using WebPWrecover.Services;
+using DAL.Services;
 
 namespace ToDoList
 {
@@ -17,24 +26,55 @@ namespace ToDoList
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddScoped<IValidator<NoteDTO>, NoteDTOValidator>();
 
             // Register AutoMapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-            builder.Services.AddScoped< IRepository<User, int, User>, UserRepository>();
-            builder.Services.AddScoped< IRepository<Category, int, Category>, CategoryRepository>();
-            builder.Services.AddScoped<IRepository<Note, int, Note>, NoteRepository>();
-            builder.Services.AddScoped<DataAccessFactory>();
+            // Register services and repositories
+            
+            builder.Services.AddScoped<NoteRepository>();
+            builder.Services.AddScoped<CategoryRepository>();
             builder.Services.AddScoped<NoteService>();
             builder.Services.AddScoped<CategoryService>();
-            //builder.Services.AddScoped<UserService>();
 
+            //register session
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromSeconds(300);
+            });
+            builder.Services.AddHttpContextAccessor();
 
             //add database connetction
             builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(
                     builder.Configuration.GetConnectionString("DefaultConnection")
                 ));
+
+
+            //Register Add Identity
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = true;
+                options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
+            })
+            .AddDefaultTokenProviders()
+            .AddEntityFrameworkStores<AppDbContext>();
+
+            //Configure path for Identity
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Identity/Account/Login";
+                options.LogoutPath = "/Identity/Account/Logout";
+                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+            });
+
+            //Add EmailSender
             builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
+
+            builder.Services.AddTransient<IEmailSender, EmailSender>();
+            builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -45,13 +85,16 @@ namespace ToDoList
                 app.UseHsts();
             }
 
+           
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            //cofigure middlewares
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
-
+            app.UseSession();
+            app.MapRazorPages();
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Note}/{action=Index}/{id?}");

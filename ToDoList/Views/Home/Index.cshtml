@@ -2,7 +2,14 @@
     ViewData["Title"] = "Home Page";
 }
 
+<div class="align-content-end">
+    <partial name="_Notification" class="align-content-end" />
+</div>
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <p>A personalized todo list companion</p>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

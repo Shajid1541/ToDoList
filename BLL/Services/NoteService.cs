@@ -208,9 +208,12 @@ namespace BLL.Services
         public async Task<NoteViewDTO> GetNotesBySearchStringAsync(string searchString, int[] filterOptions, int pageNumber, int pageSize)
         {
             searchString = searchString.IsNullOrEmpty() ? "" : searchString;
+            searchString = searchString.ToLower();
             var notes = await noteRepository.ReadAllAsync();
-            notes = notes.Where(x => x.userId == GetUserId()).ToList();
-            notes = notes.Where(n => n.NoteTitle.Contains(searchString) || n.NoteDescription.Contains(searchString)).ToList();
+            notes = notes.Where(n => n.userId == GetUserId() &&
+                         (n.NoteTitle.ToLower().Contains(searchString) ||
+                          n.NoteDescription.ToLower().Contains(searchString)))
+             .ToList();
             notes = sortPriority(notes);
             var data = new NoteViewDTO();
             if(filterOptions != null && filterOptions.Length > 0)

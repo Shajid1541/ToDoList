@@ -159,6 +159,22 @@
                 </div>
                 <div class="card-body">
                     <h4 class="card-text">@Html.DisplayFor(modelItem => item.NoteDescription)</h4>
+                    <span id="confirmDeleteSpan_@item.Id" style="display:none">
+                        <span> Confirm Delete</span>
+                        <a class="btn btn-group btn-danger"
+                           asp-action="Delete"
+                           asp-route-id="@item.Id"
+                           asp-route-filterOptions="@string.Join(",", Model.FilterOptions)"
+                           asp-route-searchString="@Model.SearchString"
+                           asp-route-pageNumber="@Model.Notes.PageNumber"
+                           asp-route-pageSize="@Model.Notes.PageSize">
+                            Yes
+                        </a>
+                        <a href="#" class="btn btn-group btn-primary" onclick="confirmDelete('@item.Id', false)">No</a>
+                    </span>
+                    <span id="deleteSpan_@item.Id">
+                        <a href="#" class="btn btn-group btn-danger" onclick="confirmDelete('@item.Id', true)">Delete</a>
+                    </span>
                     <div class="btn-group" role="group">
                         @if (item.DueDate < DateTime.Now)
                         {
@@ -184,24 +200,10 @@
                                         <button class="btn btn-group btn-success" disabled>Finished</button>
                             }
                         }
-                        <span id="confirmDeleteSpan_@item.Id" style="display:none">
-                            <span> Are you sure</span>
-                            <a class="btn btn-group btn-danger"
-                               asp-action="Delete"
-                               asp-route-id="@item.Id"
-                               asp-route-filterOptions="@string.Join(",", Model.FilterOptions)"
-                               asp-route-searchString="@Model.SearchString"
-                               asp-route-pageNumber="@Model.Notes.PageNumber"
-                               asp-route-pageSize="@Model.Notes.PageSize">
-                                Yes
-                            </a>
-                            <a href="#" class="btn btn-primary" onclick="confirmDelete('@item.Id', false)">No</a>
-                        </span>
-                        <span id="deleteSpan_@item.Id">
-                            <a href="#" class="btn btn-danger" onclick="confirmDelete('@item.Id', true)">Delete</a>
-                        </span>
+                        
                         
                     </div>
+                    
                 </div>
             </div>
         </div>

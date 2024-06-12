@@ -21,6 +21,11 @@
                     <div class="input-group">
                         <input type="text" class="form-control" placeholder="Search" name="searchString" />
                         <input hidden name="pageSize" id="hiddenPageSize" value="@Model.Notes.PageSize"/>
+                        <input type="hidden" name="searchString" value="@Model.SearchString" />
+                        @foreach (var filterOption in Model.FilterOptions)
+                        {
+                            <input type="hidden" name="filterOptions" value="@filterOption" />
+                        }
                         <button class="btn btn-outline-secondary" type="submit">Search</button>
                     </div>
                 </form>

@@ -203,9 +203,9 @@ namespace BLL.Services
             return noteList;
         }
         #endregion
-        
+
         #region GetNotesBySearchString
-        public async Task<NoteViewDTO> GetNotesBySearchStringAsync(string searchString, int[] filterOptions, int pageNumber, int pageSize)
+        /*public async Task<NoteViewDTO> GetNotesBySearchStringAsync(string searchString, int[] filterOptions, int pageNumber, int pageSize)
         {
             searchString = searchString.IsNullOrEmpty() ? "" : searchString;
             searchString = searchString.ToLower();
@@ -241,6 +241,76 @@ namespace BLL.Services
             data.FilterOptions = filterOptions ?? [];
 
             return data;
+        }*/
+        public async Task<NoteViewDTO> GetNotesBySearchStringAsync(string searchString, int[] filterOptions, int pageNumber, int pageSize)
+        {
+            searchString = string.IsNullOrEmpty(searchString) ? "" : searchString.ToLower();
+
+            var notes = await GetFilteredNotesAsync(searchString);
+            notes = FilterByUser(notes, GetUserId());
+            notes = FilterBySearchString(notes, searchString);
+            notes = sortPriority(notes);
+
+            if (filterOptions != null && filterOptions.Length > 0)
+            {
+                notes = FilterByCategory(notes, filterOptions);
+            }
+
+            var pagedNotes = GetPagedNotes(notes, pageNumber, pageSize, out int totalItems);
+
+            var notesDto = mapper.Map<List<NoteDTO>>(pagedNotes);
+            var categories = await GetCategoriesAsync();
+
+            return new NoteViewDTO
+            {
+                Notes = new PagedResult<NoteDTO>
+                {
+                    Items = notesDto,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalItems = totalItems
+                },
+                Categories = mapper.Map<List<CategoryDTO>>(categories),
+                SearchString = searchString,
+                FilterOptions = filterOptions ?? Array.Empty<int>()
+            };
+        }
+
+        private async Task<List<Note>> GetFilteredNotesAsync(string searchString)
+        {
+            return await noteRepository.ReadAllAsync();
+        }
+
+        private List<Note> FilterByUser(List<Note> notes, string userId)
+        {
+            return notes.Where(n => n.userId == userId).ToList();
+        }
+
+        private List<Note> FilterBySearchString(List<Note> notes, string searchString)
+        {
+            return notes.Where(n => n.NoteTitle.ToLower().Contains(searchString) ||
+                                    n.NoteDescription.ToLower().Contains(searchString)).ToList();
+        }
+
+        private List<Note> FilterByCategory(List<Note> notes, int[] filterOptions)
+        {
+            return notes.Where(n => filterOptions.Contains(n.categoryId)).ToList();
+        }
+
+        private List<Note> GetPagedNotes(List<Note> notes, int pageNumber, int pageSize, out int totalItems)
+        {
+            totalItems = notes.Count;
+            if ((pageNumber - 1) * pageSize >= totalItems)
+            {
+                pageNumber--;
+            }
+
+            return notes.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+        }
+
+        private async Task<List<CategoryDTO>> GetCategoriesAsync()
+        {
+            return await categoryService.GetAllCategorysAsync();
         }
         #endregion
 
